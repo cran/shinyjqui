@@ -8,7 +8,6 @@ library(shinyjqui)
 #  }
 #  
 #  ui <- fluidPage(
-#    includeJqueryUI(),
 #    orderInput(inputId = 'foo', label = 'A simple example', items = c('A', 'B', 'C')),
 #    verbatimTextOutput('order')
 #  )

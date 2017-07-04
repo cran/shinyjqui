@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Yang Tang" />
 
-<meta name="date" content="2017-03-04" />
+<meta name="date" content="2017-07-04" />
 
 <title>The orderInput</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">The orderInput</h1>
 <h4 class="author"><em>Yang Tang</em></h4>
-<h4 class="date"><em>2017-03-04</em></h4>
+<h4 class="date"><em>2017-07-04</em></h4>
 
 
 
@@ -80,7 +80,6 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 }
 
 ui &lt;-<span class="st"> </span><span class="kw">fluidPage</span>(
-  <span class="kw">includeJqueryUI</span>(),
   <span class="kw">orderInput</span>(<span class="dt">inputId =</span> <span class="st">'foo'</span>, <span class="dt">label =</span> <span class="st">'A simple example'</span>, <span class="dt">items =</span> <span class="kw">c</span>(<span class="st">'A'</span>, <span class="st">'B'</span>, <span class="st">'C'</span>)),
   <span class="kw">verbatimTextOutput</span>(<span class="st">'order'</span>)
 )
@@ -140,7 +139,7 @@ ui &lt;-<span class="st"> </span><span class="kw">fluidPage</span>(
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

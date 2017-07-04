@@ -5,7 +5,7 @@
 \alias{jqui_add_class}
 \alias{jqui_remove_class}
 \alias{jqui_switch_class}
-\title{Add/remove/switch class(es) with animating.}
+\title{Class animation.}
 \usage{
 jqui_add_class(selector, className, duration = 400, easing = "swing",
   complete = NULL)
@@ -64,4 +64,3 @@ each of the set of matched elements while animating all style changes} }
   jqui_add_class('#foo', className = 'lead')
 }
 }
-

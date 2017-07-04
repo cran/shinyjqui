@@ -2,49 +2,25 @@
 library(shiny)
 library(shinyjqui)
 
-## ---- include=FALSE------------------------------------------------------
-func_intro <- data.frame(Functions = c('includeJqueryUI',
-                                    'jqui_draggable', 'jqui_draggabled',
-                                    'jqui_droppable', 'jqui_droppabled', 
-                                    'jqui_resizable', 'jqui_resizabled', 
-                                    'jqui_selectable', 'jqui_selectabled', 
-                                    'jqui_sortable', 'jqui_sortabled',
-                                    'orderInput', 
-                                    'jqui_effect', 'jqui_show', 'jqui_hide',
-                                    'get_jqui_effects',
-                                    'jqui_add_class', 'jqui_remove_class', 
-                                    'jqui_switch_class'), 
-                      Description = c(
-                        'Load necessary web assets. Has to be called before the usage of other functions',
-                        'Enable or disable element\'s draggable interaction.',
-                        'Initialize an element as draggable.',
-                        'Enable or disable element\'s droppable interaction.',
-                        'Initialize an element as droppable.',
-                        'Enable or disable element\'s resizable interaction.',
-                        'Initialize an element as resizable.',
-                        'Enable or disable element\'s selectable interaction.',
-                        'Initialize an element as selectable.',
-                        'Enable or disable element\'s sortable interaction.',
-                        'Initialize an element as sortable.',
-                        'Show order of a character vector and allow users to change the order by drag and drop.',
-                        'Let element(s) to show an animation immediately.',
-                        'Display hidden element(s) with an animation',
-                        'Hide element(s) with an animation',
-                        'List all the animation effects',
-                        'Add class(es) to element(s) while animating all style changes.',
-                        'Remove class(es) from element(s) while animating all style changes.',
-                        'Add and remove class(es) to element(s) while animating all style changes.'
-                      ),
-                      Where_to_use = c('ui',
-                                       rep(c('server', 'ui'), times = 5), 
-                                       'ui', 
-                                       rep('server', times = 3),
-                                       '',
-                                       rep('server', times = 3)),
-                      stringsAsFactors = FALSE)
-
 ## ---- echo=FALSE---------------------------------------------------------
-knitr::kable(func_intro[2:11, ], row.names = FALSE)
+func_intro <- data.frame(Functions = c('jqui_draggable', 'jqui_draggabled',
+                                       'jqui_droppable', 'jqui_droppabled', 
+                                       'jqui_resizable', 'jqui_resizabled', 
+                                       'jqui_selectable', 'jqui_selectabled', 
+                                       'jqui_sortable', 'jqui_sortabled'), 
+                         Description = c('Enable or disable element\'s draggable interaction.',
+                                         'Initialize an element as draggable.',
+                                         'Enable or disable element\'s droppable interaction.',
+                                         'Initialize an element as droppable.',
+                                         'Enable or disable element\'s resizable interaction.',
+                                         'Initialize an element as resizable.',
+                                         'Enable or disable element\'s selectable interaction.',
+                                         'Initialize an element as selectable.',
+                                         'Enable or disable element\'s sortable interaction.',
+                                         'Initialize an element as sortable.'),
+                         Where_to_use = rep(c('server', 'ui'), times = 5),
+                         stringsAsFactors = FALSE)
+knitr::kable(func_intro, row.names = FALSE)
 
 ## ---- eval = FALSE-------------------------------------------------------
 #  # in shiny ui
@@ -71,27 +47,70 @@ knitr::kable(func_intro[2:11, ], row.names = FALSE)
 #  jqui_draggable(selector = '#input', switch = FALSE)
 
 ## ---- echo=FALSE---------------------------------------------------------
-knitr::kable(data.frame(Interactions = c('draggagle', 'droppable', 'resizable', 'selectable', 'sortable'),
-                        suffix = c('position', 'dragging', 'size', 'selected', 'order'),
-                        `shiny input value` = c('A list of the element\'s left and top distances in px to its parent',
-                                                'The id of an acceptable element that is now dragging',
-                                                'A list of the element\'s size',
-                                                'A dataframe containing the id and innerHTML of curently selected elements',
-                                                'A dataframe containing the id and innerHTML of curently order of elements')))
+draggable_shiny <- data.frame(
+  Interaction_type = 'draggable',
+  suffix = c('position', 'is_dragging'),
+  `The_returned_shiny_input_value` = c(
+    'A list of the element\'s left and top distances (in pixels) to its parent element',
+    'TRUE or FALSE that indicate whether the element is dragging'
+  )
+)
+
+droppable_shiny <- data.frame(
+  Interaction_type = 'droppable',
+  suffix = c('dragging', 'over', 'drop', 'dropped', 'out'),
+  `The_returned_shiny_input_value` = c(
+    'The id of an acceptable element that is now dragging',
+    'The id of the last acceptable element that is dragged over',
+    'The id of the last acceptable element that is dropped',
+    'The ids of all acceptable elements that is currently dropped',
+    'The id of the last acceptable element that is dragged out'
+  )
+)
+
+resizable_shiny <- data.frame(
+  Interaction_type = 'resizable',
+  suffix = c('size', 'is_resizing'),
+  `The_returned_shiny_input_value` = c(
+    'A list of the element\'s current size',
+    'TRUE or FALSE that indicate whether the element is resizing'
+  )
+)
+
+selectable_shiny <- data.frame(
+  Interaction_type = 'selectable',
+  suffix = c('selected', 'is_selecting'),
+  `The_returned_shiny_input_value` = c(
+    'A dataframe containing the id and innerHTML of curently selected elements',
+    'TRUE or FALSE that indicate whether the element is selecting (e.g. during lasso selection)'
+  )
+)
+
+sortable_shiny <- data.frame(
+  Interaction_type = 'sortable',
+  suffix = c('order'),
+  `The_returned_shiny_input_value` = c(
+    'A dataframe containing the id and innerHTML of curently order of elements'
+  )
+)
+
+knitr::kable(rbind(draggable_shiny, droppable_shiny, resizable_shiny, 
+                   selectable_shiny, sortable_shiny))
+
 
 ## ---- eval = FALSE-------------------------------------------------------
 #  shiny_opt = list(
 #  
-#    # define the shiny input value input$id_suffix1
+#    # define shiny input value input$id_suffix1
 #    suffix1 = list(
 #      # on event_type1 run callback1 and send the returned value to input$id_suffix1
-#      event_type1 = htmlwidgets::JS(callback1),
+#      event_type1 = JS(callback1),
 #      # on event_type2 run callback2 and send the returned value to input$id_suffix1
-#      event_type2 = htmlwidgets::JS(callback2),
+#      event_type2 = JS(callback2),
 #      ...
 #    ),
 #  
-#    # define the shiny input value input$id_suffix2
+#    # define shiny input value input$id_suffix2
 #    suffix2 = list(
 #      ...
 #    ),
@@ -99,19 +118,26 @@ knitr::kable(data.frame(Interactions = c('draggagle', 'droppable', 'resizable', 
 #    # define other shiny input values
 #  
 #  )
+#  
+#  # pass the shiny option to draggable
+#  jqui_draggable('#foo', options = list(
+#    shiny = shiny_opt,
+#    #other draggable-specific options
+#  ))
 
 ## ---- eval = FALSE-------------------------------------------------------
+#  # server
 #  jqui_draggable('#foo', options = list(
 #    shiny = list(
-#      # By default, draggable element has a shiny input value showing the element
-#      # position (relative to the offset parent). Here, another shiny input
-#      # value is added. It gives the element offset (position relative to the
+#      # By default, draggable element has a shiny input value showing the element's
+#      # position (relative to the parent element). Here, another shiny input
+#      # value is added. It gives the element's offset (position relative to the
 #      # document). Using input$foo_offset to get access to it .
 #      offset = list(
 #        # return the initiated offset value when the draggable is created
-#        dragcreate = htmlwidgets::JS('function(event, ui) { return $(event.target).offset(); };'),
+#        dragcreate = JS('function(event, ui) { return $(event.target).offset(); }'),
 #        # update the offset value while dragging
-#        drag = htmlwidgets::JS('function(event, ui) { return $(event.target).offset(); };')
+#        drag = JS('function(event, ui) { return $(event.target).offset(); }')
 #      )
 #    )
 #  ))
@@ -124,14 +150,14 @@ knitr::kable(data.frame(Interactions = c('draggagle', 'droppable', 'resizable', 
 
 ## ---- eval = FALSE-------------------------------------------------------
 #  jqui_droppable('#foo', options = list(
-#    accept = '#bar', # Which draggable element to monitor.
+#    accept = '#bar', # jQuery selector to define which draggable element to monitor. Accept anything if not set.
 #    classes = list(
-#      `ui-droppable-active` = 'ui-state-active', # change class when draggable element is dragging
-#      `ui-droppable-hover` = 'ui-state-hover' # change class when draggable element is dragging over
+#      `ui-droppable-active` = 'ui-state-focus', # change class when draggable element is dragging
+#      `ui-droppable-hover` = 'ui-state-highlight' # change class when draggable element is dragging over
 #    ),
-#    drop = htmlwidgets::JS(
-#      'function(event, ui){$(this).addClass("ui-state-highlight");}'
-#    ) # change class when draggable element is dropped in
+#    drop = JS(
+#      'function(event, ui){$(this).addClass("ui-state-active");}'
+#    ) # a javascrip callback to change class when draggable element is dropped in
 #  ))
 
 ## ---- eval = FALSE-------------------------------------------------------
@@ -144,10 +170,8 @@ knitr::kable(data.frame(Interactions = c('draggagle', 'droppable', 'resizable', 
 #  
 #  # make the two plotOutputs resize synchronously
 #  jqui_resizabled(plotOutput('plot1', width = '400px', height = '400px'),
-#                  options = list(alsoResize = '#plot2')),
-#  jqui_resizabled(plotOutput('plot2', width = '400px', height = '400px'),
-#                  options = list(alsoResize = '#plot1'))
-#  
+#                    options = list(alsoResize = '#plot2')),
+#  plotOutput('plot2', width = '400px', height = '400px')
 
 ## ---- eval = FALSE-------------------------------------------------------
 #  # highlight the selected plotOutput
@@ -172,21 +196,34 @@ knitr::kable(data.frame(Interactions = c('draggagle', 'droppable', 'resizable', 
 #  
 
 ## ---- echo=FALSE---------------------------------------------------------
-knitr::kable(func_intro[13:15, ], row.names = FALSE)
-
-## ---- echo=FALSE---------------------------------------------------------
 get_jqui_effects()
 
+## ---- echo=FALSE---------------------------------------------------------
+func_intro <- data.frame(Functions = c('jqui_effect', 'jqui_show', 'jqui_hide', 'jqui_toggle'), 
+                         Description = c('Let element(s) to show an animation immediately.',
+                                         'Display hidden element(s) with an animation',
+                                         'Hide element(s) with an animation',
+                                         'Display or hide element(s) with an animation'),
+                         Where_to_use = rep('server', times = 4),
+                         stringsAsFactors = FALSE)
+knitr::kable(func_intro, row.names = FALSE)
+
 ## ---- eval=FALSE---------------------------------------------------------
-#  # in shiny ui
+#  # ui
 #  plotOutput('foo', width = '400px', height = '400px')
 #  
-#  # in shiny server
+#  # server
 #  jqui_effect('#foo', effect = 'bounce') # bounces the plot
 #  jqui_effect('#foo', effect = 'scale', options = list(percent = 50)) # scale to 50%
 #  jqui_hide('#foo', effect = 'size', options = list(width = 200, height = 60)) # resize then hide
 #  jqui_show('#foo', effect = 'clip') # show the plot by clipping
 
 ## ---- echo=FALSE---------------------------------------------------------
-knitr::kable(func_intro[17:19, ], row.names = FALSE)
+func_intro <- data.frame(Functions = c('jqui_add_class', 'jqui_remove_class', 'jqui_switch_class'), 
+                         Description = c('Add class(es) to element(s) while animating all style changes.',
+                                         'Remove class(es) from element(s) while animating all style changes.',
+                                         'Add and remove class(es) to element(s) while animating all style changes.'),
+                         Where_to_use = rep('server', times = 3),
+                         stringsAsFactors = FALSE)
+knitr::kable(func_intro, row.names = FALSE)
 

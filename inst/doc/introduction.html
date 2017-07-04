@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Yang Tang" />
 
-<meta name="date" content="2017-03-04" />
+<meta name="date" content="2017-07-04" />
 
 <title>Introduction to shinyjqui</title>
 
@@ -70,17 +70,13 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Introduction to shinyjqui</h1>
 <h4 class="author"><em>Yang Tang</em></h4>
-<h4 class="date"><em>2017-03-04</em></h4>
+<h4 class="date"><em>2017-07-04</em></h4>
 
 
 
 <p>The <code>shinyjqui</code> package provides functions to give shiny ui mouse-interactions and animation effects. This vignette provides some general introductions and examples.</p>
-<div id="the-includejqueryui-function" class="section level2">
-<h2>The <code>includeJqueryUI</code> function</h2>
-<p>Please first call <code>includeJqueryUI()</code> in <code>ui</code> of a shiny app before using other <code>shinyjqui</code> functions. This function loads some necessary js and css into the head of a shiny html document.</p>
-</div>
-<div id="interaction-funcions" class="section level2">
-<h2>Interaction funcions</h2>
+<div id="mouse-interactions" class="section level2">
+<h2>Mouse interactions</h2>
 <p>There are five kinds of mouse interactions in jQuery UI library:</p>
 <ul>
 <li><p><strong>Draggable:</strong> Allow elements to be moved using the mouse.</p></li>
@@ -151,9 +147,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </tr>
 </tbody>
 </table>
-<div id="general-usage" class="section level3">
-<h3>General usage</h3>
-<p>For each interaction, there are two functions: <code>-able()</code> and <code>-abled()</code>. They both can make a shiny html element interactive, but should be used in different places. The <code>-abled()</code> functions are designed to be used in <code>ui</code> of a shiny document. They return a modified element (tag, tagList, input or output) with interaction enabled. The <code>-able()</code> functions modify the interactivity of existing (pre-defined in <code>ui</code>) elements and therefore should be placed in <code>server</code> of a shiny document. For example, you can make a <code>textInput</code> draggable either by:</p>
+<p>For each interaction, there are two functions: <code>-able()</code> and <code>-abled()</code>. They both can make a shiny html element interactive, but should be used in different places. The <code>-abled()</code> functions are designed to be used in <code>ui</code> of a shiny app. They return a modified element (tag, tagList, input or output) with interaction enabled. The <code>-able()</code> functions modify the interactivity of existing (pre-defined in <code>ui</code>) elements and therefore should be placed in <code>server</code> of a shiny app. For example, you can make a <code>textInput</code> draggable either in this way:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># in shiny ui</span>
 <span class="kw">jqui_draggabled</span>(<span class="kw">textInput</span>(<span class="st">'input'</span>, <span class="st">'Input'</span>))</code></pre></div>
 <p>or in this way:</p>
@@ -162,8 +156,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <span class="co"># in shiny server, either outside or in observe() or ovservEvent()</span>
 <span class="kw">jqui_draggable</span>(<span class="dt">selector =</span> <span class="st">'#input'</span>)</code></pre></div>
-<p>The <code>-able()</code> functions use <a href="https://api.jquery.com/category/selectors/">jQuery selector</a> to identify which element to act on. In the above example, the selector <code>#input</code> refers to the element with id <code>input</code>. So you can make all the shiny inputs draggable by <code>jqui_draggable(selector = '.shiny-bound-input')</code>.</p>
-<p>For <code>-abled()</code> functions, you can also make multiple elements interactive by wrapping them with <code>tagList()</code>:</p>
+<p>The advantiage of the second way is that you can control the element’s interactivity reactivly by calling the <code>-able()</code> functions inside an <code>observe()</code> or <code>ovservEvent()</code>. The <code>-able()</code> functions use <a href="https://api.jquery.com/category/selectors/">jQuery selector</a> to identify which element to act on. In the above example, the selector <code>#input</code> refers to the element with id <code>input</code>. You can also use <code>class name</code> to select multiple elements, e.g., to make all the shiny inputs draggable by <code>jqui_draggable(selector = '.shiny-bound-input')</code>.</p>
+<p>For <code>-abled()</code> functions, to make multiple elements interactive, you can use <code>tagList()</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># in shiny ui, make each element in the tagList draggable</span>
 <span class="kw">jqui_draggabled</span>(<span class="kw">tagList</span>(
   <span class="kw">selectInput</span>(<span class="st">'sel'</span>, <span class="st">'Select'</span>, <span class="dt">choices =</span> month.abb),
@@ -173,31 +167,61 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>The <code>-able()</code> functions have a <code>switch</code> parameter. Set it as <code>FALSE</code> to disable the interaction of an element:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># in shiny server</span>
 <span class="kw">jqui_draggable</span>(<span class="dt">selector =</span> <span class="st">'#input'</span>, <span class="dt">switch =</span> <span class="ot">FALSE</span>)</code></pre></div>
-<p>Both <code>-able()</code> and <code>-abled()</code> functions have an <code>options</code> parameter to let you pass interaction-specific options. You can find available options on jQuery UI’s <a href="http://api.jqueryui.com/category/interactions/">API Documentation</a> page. Some examples about these options are listed in the next few sections.</p>
-<p>Once an interaction is turned on and if the target element has an <code>id</code>, you can get access to some pre-defined interaction-specific shiny input values through <code>input$id_suffix</code>, where the <code>id</code> is the id of target element (<code>id</code> attribute for shiny tag, <code>inputId</code> for shiny inputs, <code>outputId</code> for shiny outputs) and the <code>suffix</code> depends on the interaction you enabled. Please see the following table:</p>
+<p>Both <code>-able()</code> and <code>-abled()</code> functions have an <code>options</code> parameter to accept interaction-specific options. You can find available options on jQuery UI’s <a href="http://api.jqueryui.com/category/interactions/">API Documentation</a> page. Some examples about these options are listed in the next few sections.</p>
+<p>Once an interaction is turned on and if the target element has an <code>id</code>, you can get access to some pre-defined interaction-specific shiny input values through <code>input$id_suffix</code>, where the <code>id</code> is the id of target element (<code>id</code> attribute for shiny tag, <code>inputId</code> for shiny inputs, <code>outputId</code> for shiny outputs) and the <code>suffix</code> depends on the type of interaction enabled. Please see the following table:</p>
 <table>
 <thead>
 <tr class="header">
-<th align="left">Interactions</th>
+<th align="left">Interaction_type</th>
 <th align="left">suffix</th>
-<th align="left">shiny.input.value</th>
+<th align="left">The_returned_shiny_input_value</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">draggagle</td>
+<td align="left">draggable</td>
 <td align="left">position</td>
-<td align="left">A list of the element’s left and top distances in px to its parent</td>
+<td align="left">A list of the element’s left and top distances (in pixels) to its parent element</td>
 </tr>
 <tr class="even">
+<td align="left">draggable</td>
+<td align="left">is_dragging</td>
+<td align="left">TRUE or FALSE that indicate whether the element is dragging</td>
+</tr>
+<tr class="odd">
 <td align="left">droppable</td>
 <td align="left">dragging</td>
 <td align="left">The id of an acceptable element that is now dragging</td>
 </tr>
+<tr class="even">
+<td align="left">droppable</td>
+<td align="left">over</td>
+<td align="left">The id of the last acceptable element that is dragged over</td>
+</tr>
 <tr class="odd">
+<td align="left">droppable</td>
+<td align="left">drop</td>
+<td align="left">The id of the last acceptable element that is dropped</td>
+</tr>
+<tr class="even">
+<td align="left">droppable</td>
+<td align="left">dropped</td>
+<td align="left">The ids of all acceptable elements that is currently dropped</td>
+</tr>
+<tr class="odd">
+<td align="left">droppable</td>
+<td align="left">out</td>
+<td align="left">The id of the last acceptable element that is dragged out</td>
+</tr>
+<tr class="even">
 <td align="left">resizable</td>
 <td align="left">size</td>
-<td align="left">A list of the element’s size</td>
+<td align="left">A list of the element’s current size</td>
+</tr>
+<tr class="odd">
+<td align="left">resizable</td>
+<td align="left">is_resizing</td>
+<td align="left">TRUE or FALSE that indicate whether the element is resizing</td>
 </tr>
 <tr class="even">
 <td align="left">selectable</td>
@@ -205,51 +229,64 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <td align="left">A dataframe containing the id and innerHTML of curently selected elements</td>
 </tr>
 <tr class="odd">
+<td align="left">selectable</td>
+<td align="left">is_selecting</td>
+<td align="left">TRUE or FALSE that indicate whether the element is selecting (e.g. during lasso selection)</td>
+</tr>
+<tr class="even">
 <td align="left">sortable</td>
 <td align="left">order</td>
 <td align="left">A dataframe containing the id and innerHTML of curently order of elements</td>
 </tr>
 </tbody>
 </table>
-<p>You can even customize these shiny input values by including a <code>shiny</code> option in the <code>options</code> parameter. The shiny option is a list in the following format:</p>
+<p>You can even customize these shiny input values by including a <code>shiny</code> option in the <code>options</code> parameter. Create a shiny option in the following format, then combine it with other interaction-specific options before passing to the <code>options</code> parameter:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">shiny_opt =<span class="st"> </span><span class="kw">list</span>(
   
-  <span class="co"># define the shiny input value input$id_suffix1</span>
+  <span class="co"># define shiny input value input$id_suffix1</span>
   <span class="dt">suffix1 =</span> <span class="kw">list</span>(
     <span class="co"># on event_type1 run callback1 and send the returned value to input$id_suffix1</span>
-    <span class="dt">event_type1 =</span> htmlwidgets<span class="op">::</span><span class="kw">JS</span>(callback1),
+    <span class="dt">event_type1 =</span> <span class="kw">JS</span>(callback1),
     <span class="co"># on event_type2 run callback2 and send the returned value to input$id_suffix1</span>
-    <span class="dt">event_type2 =</span> htmlwidgets<span class="op">::</span><span class="kw">JS</span>(callback2),
+    <span class="dt">event_type2 =</span> <span class="kw">JS</span>(callback2),
     ...
   ),
   
-  <span class="co"># define the shiny input value input$id_suffix2</span>
+  <span class="co"># define shiny input value input$id_suffix2</span>
   <span class="dt">suffix2 =</span> <span class="kw">list</span>(
     ...
   ),
   
   <span class="co"># define other shiny input values</span>
   
-)</code></pre></div>
-<p>Each element of the list is also a list that define a shiny input value. Its name is used as <code>siffix</code> in <code>input$id_suffix</code>. Within that list, there are multiple <code>htmlwidgets::JS</code> wrapped javascript callback functions named with corresponding event types. The event triggers the callback to run and the returned value is used to update the shiny input value. The valid event types for each interactions can be found in the <a href="http://api.jqueryui.com/category/interactions/">API Documentation</a> of jQuery UI. The callcack function takes two arguments, <code>event</code> and <code>ui</code>. The definition of the <code>ui</code> argument can also be found in that document too. Here is a simple example of <code>draggable</code> interaction:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">jqui_draggable</span>(<span class="st">'#foo'</span>, <span class="dt">options =</span> <span class="kw">list</span>(
+)
+
+<span class="co"># pass the shiny option to draggable</span>
+<span class="kw">jqui_draggable</span>(<span class="st">'#foo'</span>, <span class="dt">options =</span> <span class="kw">list</span>(
+  <span class="dt">shiny =</span> shiny_opt, 
+  <span class="co">#other draggable-specific options</span>
+))</code></pre></div>
+<p>Each element of the shiny option list is also a list that define a shiny input value. Its name is used as <code>siffix</code> in <code>input$id_suffix</code>. Within that list, there are multiple <code>JS</code> wrapped javascript callback functions named with corresponding event types. The event triggers the callback to run and the returned value is used to update the shiny input value. The valid event types for each interactions can be found in the <a href="http://api.jqueryui.com/category/interactions/">API Documentation</a> of jQuery UI. The callcack functions take two arguments, <code>event</code> and <code>ui</code>. The definition of the <code>ui</code> argument can also be found in that document too. Here is a simple example:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># server</span>
+<span class="kw">jqui_draggable</span>(<span class="st">'#foo'</span>, <span class="dt">options =</span> <span class="kw">list</span>(
   <span class="dt">shiny =</span> <span class="kw">list</span>(
-    <span class="co"># By default, draggable element has a shiny input value showing the element </span>
-    <span class="co"># position (relative to the offset parent). Here, another shiny input</span>
-    <span class="co"># value is added. It gives the element offset (position relative to the </span>
+    <span class="co"># By default, draggable element has a shiny input value showing the element's </span>
+    <span class="co"># position (relative to the parent element). Here, another shiny input</span>
+    <span class="co"># value is added. It gives the element's offset (position relative to the </span>
     <span class="co"># document). Using input$foo_offset to get access to it . </span>
     <span class="dt">offset =</span> <span class="kw">list</span>(
       <span class="co"># return the initiated offset value when the draggable is created</span>
-      <span class="dt">dragcreate =</span> htmlwidgets<span class="op">::</span><span class="kw">JS</span>(<span class="st">'function(event, ui) { return $(event.target).offset(); };'</span>),
+      <span class="dt">dragcreate =</span> <span class="kw">JS</span>(<span class="st">'function(event, ui) { return $(event.target).offset(); }'</span>),
       <span class="co"># update the offset value while dragging</span>
-      <span class="dt">drag =</span> htmlwidgets<span class="op">::</span><span class="kw">JS</span>(<span class="st">'function(event, ui) { return $(event.target).offset(); };'</span>)
+      <span class="dt">drag =</span> <span class="kw">JS</span>(<span class="st">'function(event, ui) { return $(event.target).offset(); }'</span>)
     )
   )
 ))</code></pre></div>
-</div>
+<p>When customizing shiny input values by shiny option and callbacks, you may want to get the id of certain element in javascript. For simple shiny tag (e.g. <code>tags$div</code>), <code>element.attr(&quot;id&quot;)</code> just works fine, but it dosen’t work for shiny inputs (e.g. <code>textInput</code>). The id arribute of most shiny inputs is hidden inside a div container. You have to use <code>.find()</code> to locate it. The <code>shinyjqui</code> package comes with an internal javascript function <code>shinyjqui.getId()</code> which will take care of this. You can just simply pass in any shiny element, either simple tag, shiny input or shiny output. It will use the appropriate way to find out the id.</p>
+<p>The following are some examples for each iteractions.</p>
 <div id="draggable" class="section level3">
 <h3>Draggable</h3>
-<p>Draggable element can be moved by mouse. You can custom the movement by options:</p>
+<p>Draggable element can be moved by mouse. You can custom its movement by some options:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># drag only horizontally</span>
 <span class="kw">jqui_draggable</span>(<span class="st">'#foo'</span>, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">axis =</span> <span class="st">'x'</span>))
 <span class="co"># make movement snapping to a 80 x 80 grid</span>
@@ -259,16 +296,16 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h3>Droppable</h3>
 <p>With the droppable interaction enabled, the element can sense the behavior of accepted draggable elements and make changes (e.g. change display style) accordingly:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">jqui_droppable</span>(<span class="st">'#foo'</span>, <span class="dt">options =</span> <span class="kw">list</span>(
-  <span class="dt">accept =</span> <span class="st">'#bar'</span>, <span class="co"># Which draggable element to monitor.</span>
+  <span class="dt">accept =</span> <span class="st">'#bar'</span>, <span class="co"># jQuery selector to define which draggable element to monitor. Accept anything if not set.</span>
   <span class="dt">classes =</span> <span class="kw">list</span>(
-    <span class="st">`</span><span class="dt">ui-droppable-active</span><span class="st">`</span> =<span class="st"> 'ui-state-active'</span>, <span class="co"># change class when draggable element is dragging</span>
-    <span class="st">`</span><span class="dt">ui-droppable-hover</span><span class="st">`</span> =<span class="st"> 'ui-state-hover'</span> <span class="co"># change class when draggable element is dragging over</span>
+    <span class="st">`</span><span class="dt">ui-droppable-active</span><span class="st">`</span> =<span class="st"> 'ui-state-focus'</span>, <span class="co"># change class when draggable element is dragging</span>
+    <span class="st">`</span><span class="dt">ui-droppable-hover</span><span class="st">`</span> =<span class="st"> 'ui-state-highlight'</span> <span class="co"># change class when draggable element is dragging over</span>
   ),
-  <span class="dt">drop =</span> htmlwidgets<span class="op">::</span><span class="kw">JS</span>(
-    <span class="st">'function(event, ui){$(this).addClass(&quot;ui-state-highlight&quot;);}'</span>
-  ) <span class="co"># change class when draggable element is dropped in</span>
+  <span class="dt">drop =</span> <span class="kw">JS</span>(
+    <span class="st">'function(event, ui){$(this).addClass(&quot;ui-state-active&quot;);}'</span>
+  ) <span class="co"># a javascrip callback to change class when draggable element is dropped in</span>
 ))</code></pre></div>
-<p>Note: When passing a javascrip callback function to the <code>opations</code> parameter, please wrap it with <code>htmlwidgets::JS()</code> so that it can be evaled correctly.</p>
+<p>Note: When passing a javascrip callback function to the <code>opations</code> parameter, please wrap it with <code>JS()</code> so that it can be evaled correctly.</p>
 </div>
 <div id="resizable" class="section level3">
 <h3>Resizable</h3>
@@ -282,9 +319,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <span class="co"># make the two plotOutputs resize synchronously</span>
 <span class="kw">jqui_resizabled</span>(<span class="kw">plotOutput</span>(<span class="st">'plot1'</span>, <span class="dt">width =</span> <span class="st">'400px'</span>, <span class="dt">height =</span> <span class="st">'400px'</span>), 
-                <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">alsoResize =</span> <span class="st">'#plot2'</span>)),
-<span class="kw">jqui_resizabled</span>(<span class="kw">plotOutput</span>(<span class="st">'plot2'</span>, <span class="dt">width =</span> <span class="st">'400px'</span>, <span class="dt">height =</span> <span class="st">'400px'</span>), 
-                <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">alsoResize =</span> <span class="st">'#plot1'</span>))</code></pre></div>
+                  <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">alsoResize =</span> <span class="st">'#plot2'</span>)),
+<span class="kw">plotOutput</span>(<span class="st">'plot2'</span>, <span class="dt">width =</span> <span class="st">'400px'</span>, <span class="dt">height =</span> <span class="st">'400px'</span>)</code></pre></div>
 </div>
 <div id="selectable" class="section level3">
 <h3>Selectable</h3>
@@ -310,12 +346,16 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <span class="co"># connect two sortable elements, so that items in one element can be dragged to another</span>
 <span class="kw">jqui_sortable</span>(<span class="st">'#foo1'</span>, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">connectWith =</span> <span class="st">'#foo2'</span>))
 <span class="kw">jqui_sortable</span>(<span class="st">'#foo2'</span>, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">connectWith =</span> <span class="st">'#foo1'</span>))</code></pre></div>
-<p><code>shinyjqui</code> has a function called <code>orderInput()</code>. You can use it to display the order of a vector in shiny and users can change the order by drag and drop. The changed items order is send back to server as an input value. Please see the Vignette <code>orderInput</code> for details.</p>
+<p><code>shinyjqui</code> has a function called <code>orderInput()</code> which takes advantage of sortable interaction. You can use it to display a list of items in shiny and can change their order by drag and drop. The changed items order is send back to server as an input value. Please see the Vignette <code>orderInput</code> for details.</p>
 </div>
 </div>
-<div id="animation-effects-functions" class="section level2">
-<h2>Animation effects functions</h2>
-<p>These functions apply an animation effect to an element:</p>
+<div id="animation-effects" class="section level2">
+<h2>Animation effects</h2>
+<p>jQuery UI library comes with 15 internal animation effects. You can get a full list of them by R function <code>get_jqui_effects()</code>:</p>
+<pre><code>##  [1] &quot;blind&quot;     &quot;bounce&quot;    &quot;clip&quot;      &quot;drop&quot;      &quot;explode&quot;  
+##  [6] &quot;fade&quot;      &quot;fold&quot;      &quot;highlight&quot; &quot;puff&quot;      &quot;pulsate&quot;  
+## [11] &quot;scale&quot;     &quot;shake&quot;     &quot;size&quot;      &quot;slide&quot;     &quot;transfer&quot;</code></pre>
+<p>There is a live demo for each effect <a href="http://jqueryui.com/effect/">here</a>. By use following functions, you can apply these effects to a shiny element:</p>
 <table>
 <thead>
 <tr class="header">
@@ -340,28 +380,30 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <td align="left">Hide element(s) with an animation</td>
 <td align="left">server</td>
 </tr>
+<tr class="even">
+<td align="left">jqui_toggle</td>
+<td align="left">Display or hide element(s) with an animation</td>
+<td align="left">server</td>
+</tr>
 </tbody>
 </table>
 <p>The above three functions use <a href="https://api.jquery.com/category/selectors/">jQuery selector</a> to locate the target element(s) and should be used in <code>server</code>.</p>
-<p>The <code>effect</code> parameter accept a string that defines which animation effect to apply. You can get a full list of animation effects by <code>get_jqui_effects()</code>:</p>
-<pre><code>##  [1] &quot;blind&quot;     &quot;bounce&quot;    &quot;clip&quot;      &quot;drop&quot;      &quot;explode&quot;  
-##  [6] &quot;fade&quot;      &quot;fold&quot;      &quot;highlight&quot; &quot;puff&quot;      &quot;pulsate&quot;  
-## [11] &quot;scale&quot;     &quot;shake&quot;     &quot;size&quot;      &quot;slide&quot;     &quot;transfer&quot;</code></pre>
-<p>There is a live demo for each effect <a href="http://jqueryui.com/effect/">here</a>. Note: The <code>transfer</code> effect can only be used in <code>jqui_effect()</code>.</p>
-<p>The <code>options</code> parameter accept a list of effect specific options. Please find more details <a href="http://api.jqueryui.com/category/effects/">here</a>. The <code>complete</code> parameter accept a javascript callback function which will be called after the animation. Please wrap it with <code>htmlwidgets::JS()</code>.</p>
+<p>The <code>effect</code> parameter accept a string that defines which animation effect to apply. Note: The <code>transfer</code> effect can only be used in <code>jqui_effect()</code>.</p>
+<p>The <code>options</code> parameter accept a list of effect specific options. Please find more details <a href="http://api.jqueryui.com/category/effects/">here</a>.</p>
+<p>The <code>complete</code> parameter accept a javascript callback function which will be called after the animation. Please wrap it with <code>JS()</code>.</p>
 <p>Here are some examples:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># in shiny ui</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># ui</span>
 <span class="kw">plotOutput</span>(<span class="st">'foo'</span>, <span class="dt">width =</span> <span class="st">'400px'</span>, <span class="dt">height =</span> <span class="st">'400px'</span>)
 
-<span class="co"># in shiny server</span>
+<span class="co"># server</span>
 <span class="kw">jqui_effect</span>(<span class="st">'#foo'</span>, <span class="dt">effect =</span> <span class="st">'bounce'</span>) <span class="co"># bounces the plot</span>
 <span class="kw">jqui_effect</span>(<span class="st">'#foo'</span>, <span class="dt">effect =</span> <span class="st">'scale'</span>, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">percent =</span> <span class="dv">50</span>)) <span class="co"># scale to 50%</span>
 <span class="kw">jqui_hide</span>(<span class="st">'#foo'</span>, <span class="dt">effect =</span> <span class="st">'size'</span>, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">width =</span> <span class="dv">200</span>, <span class="dt">height =</span> <span class="dv">60</span>)) <span class="co"># resize then hide</span>
 <span class="kw">jqui_show</span>(<span class="st">'#foo'</span>, <span class="dt">effect =</span> <span class="st">'clip'</span>) <span class="co"># show the plot by clipping</span></code></pre></div>
 </div>
-<div id="classes-animation-functions" class="section level2">
-<h2>Classes animation functions</h2>
-<p>These functions change shiny elements’ class(es) while animating all style changes:</p>
+<div id="classes-animation" class="section level2">
+<h2>Classes animation</h2>
+<p>These functions can be used to change shiny element’s class(es) while animating all style changes:</p>
 <table>
 <thead>
 <tr class="header">
@@ -399,7 +441,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>
