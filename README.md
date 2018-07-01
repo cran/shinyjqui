@@ -3,7 +3,7 @@
 shinyjqui
 =========
 
-[![Travis-CI Build Status](https://travis-ci.org/Yang-Tang/shinyjqui.svg?branch=master)](https://travis-ci.org/Yang-Tang/shinyjqui) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/Yang-Tang/shinyjqui?branch=master&svg=true)](https://ci.appveyor.com/project/Yang-Tang/shinyjqui) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/shinyjqui)](https://cran.r-project.org/package=shinyjqui)
+[![Travis-CI Build Status](https://travis-ci.org/Yang-Tang/shinyjqui.svg?branch=master)](https://travis-ci.org/Yang-Tang/shinyjqui) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/Yang-Tang/shinyjqui?branch=master&svg=true)](https://ci.appveyor.com/project/Yang-Tang/shinyjqui) [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/shinyjqui)](https://cran.r-project.org/package=shinyjqui)
 
 The shinyjqui package is an R wrapper for [jQuery UI](http://jqueryui.com/) javascript library. It allows user to easily add interactions and animation effects to a shiny app.
 
@@ -37,7 +37,8 @@ library(highcharter)
 server <- function(input, output) {}
 
 ui <- fluidPage(
-  jqui_draggabled(fileInput('file', 'File'))
+  # for shinyjqui v0.2.0 or lower, please use jqui_draggabled instead 
+  jqui_draggable(fileInput('file', 'File'))
 )
 
 shinyApp(ui, server)
@@ -55,7 +56,8 @@ server <- function(input, output) {
 }
 
 ui <- fluidPage(
-  jqui_resizabled(plotOutput('gg', width = '200px', height = '200px'))
+  # for shinyjqui v0.2.0 or lower, please use jqui_resizable instead
+  jqui_resizable(plotOutput('gg', width = '200px', height = '200px'))
 )
 
 shinyApp(ui, server)
@@ -79,7 +81,8 @@ server <- function(input, output) {
 }
 
 ui <- fluidPage(
-  jqui_sortabled(div(id = 'plots',
+  # for shinyjqui v0.2.0 or lower, please use jqui_sortabled instead
+  jqui_sortable(div(id = 'plots',
                      highchartOutput('hc', width = '200px', height = '200px'),
                      plotOutput('gg', width = '200px', height = '200px')))
 )
@@ -186,3 +189,45 @@ shinyApp(ui, server)
 ```
 
 ![](inst/fig/README-orderInput.gif)
+
+-   **sortableTableOutput():** Render a HTML table with sortable rows.
+
+``` r
+ui <- fluidPage(
+  verbatimTextOutput("index"),
+  sortableTableOutput("tbl")
+)
+
+server <- function(input, output) {
+  output$index <- renderPrint({
+    cat("Row index:\n")
+    input$tbl_row_index
+  })
+  output$tbl <- renderTable(head(mtcars), rownames = TRUE)
+}
+
+shinyApp(ui, server)
+```
+
+![](inst/fig/README-sortableTableOutput.gif)
+
+-   **selectableTableOutput():** Render a HTML table with selectable rows or cells.
+
+``` r
+ui <- fluidPage(
+  selectableTableOutput("tbl", selection_mode = "cell"),
+  verbatimTextOutput("selected")
+)
+
+server <- function(input, output) {
+  output$selected <- renderPrint({
+    cat("Selected:\n")
+    input$tbl_selected
+  })
+  output$tbl <- renderTable(head(mtcars), rownames = TRUE)
+}
+
+shinyApp(ui, server)
+```
+
+![](inst/fig/README-selectableTableOutput_cell.gif)

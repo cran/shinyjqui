@@ -6,10 +6,10 @@ library(ggplot2)
 server <- function(input, output) {
 
   observeEvent(input$en_lst, {
-    jqui_sortable('#lst', switch = TRUE)
+    jqui_sortable('#lst', operation = "enable")
   })
   observeEvent(input$di_lst, {
-    jqui_sortable('#lst', switch = FALSE)
+    jqui_sortable('#lst', operation = "disable")
   })
   output$order_lst <- renderPrint({
     print(input$lst_order)
@@ -34,10 +34,10 @@ server <- function(input, output) {
       )
     )
 
-    jqui_sortable('#tabs', switch = TRUE, options = options)
+    jqui_sortable('#tabs', operation = "enable", options = options)
   })
   observeEvent(input$di_tabs, {
-    jqui_sortable('#tabs', switch = FALSE)
+    jqui_sortable('#tabs', operation = "disable")
   })
   output$order_tabs <- renderPrint({
     print(input$tabs_order)
@@ -50,10 +50,10 @@ server <- function(input, output) {
     ggplot(mtcars, aes(x = cyl, y = mpg, color = factor(vs))) + geom_point()
   })
   observeEvent(input$en_plots, {
-    jqui_sortable('#plots', switch = TRUE)
+    jqui_sortable('#plots', operation = "enable")
   })
   observeEvent(input$di_plots, {
-    jqui_sortable('#plots', switch = FALSE)
+    jqui_sortable('#plots', operation = "disable")
   })
   output$order_plots <- renderPrint({
     print(input$plots_order)
@@ -65,7 +65,7 @@ ui <- fluidPage(
 
   # includeJqueryUI(),
 
-  jqui_sortabled(tags$ul(
+  jqui_sortable(tags$ul(
     id = 'lst',
     tags$li('A'),
     tags$li('B'),
@@ -88,7 +88,7 @@ ui <- fluidPage(
   verbatimTextOutput('order_tabs'),
   hr(),
 
-  jqui_sortabled(
+  jqui_sortable(
     div(
       id = 'plots',
       highchartOutput('highchart', width = '300px'),

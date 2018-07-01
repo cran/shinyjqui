@@ -2,49 +2,39 @@
 library(shiny)
 library(shinyjqui)
 
-## ---- echo=FALSE---------------------------------------------------------
-func_intro <- data.frame(Functions = c('jqui_draggable', 'jqui_draggabled',
-                                       'jqui_droppable', 'jqui_droppabled', 
-                                       'jqui_resizable', 'jqui_resizabled', 
-                                       'jqui_selectable', 'jqui_selectabled', 
-                                       'jqui_sortable', 'jqui_sortabled'), 
-                         Description = c('Enable or disable element\'s draggable interaction.',
-                                         'Initialize an element as draggable.',
-                                         'Enable or disable element\'s droppable interaction.',
-                                         'Initialize an element as droppable.',
-                                         'Enable or disable element\'s resizable interaction.',
-                                         'Initialize an element as resizable.',
-                                         'Enable or disable element\'s selectable interaction.',
-                                         'Initialize an element as selectable.',
-                                         'Enable or disable element\'s sortable interaction.',
-                                         'Initialize an element as sortable.'),
-                         Where_to_use = rep(c('server', 'ui'), times = 5),
-                         stringsAsFactors = FALSE)
-knitr::kable(func_intro, row.names = FALSE)
+## ---- eval = FALSE-------------------------------------------------------
+#  # create a draggable textInput in shiny ui
+#  ui <- fluidPage(
+#    jqui_draggable(textInput('foo', 'Input'))
+#  )
 
 ## ---- eval = FALSE-------------------------------------------------------
-#  # in shiny ui
-#  jqui_draggabled(textInput('input', 'Input'))
+#  # create a textInput in shiny ui
+#  ui <- fluidPage(
+#    textInput('foo', 'Input')
+#  )
 #  
-
-## ---- eval = FALSE-------------------------------------------------------
-#  # in shiny ui
-#  textInput('input', 'Input')
-#  
-#  # in shiny server, either outside or in observe() or ovservEvent()
-#  jqui_draggable(selector = '#input')
+#  # make the textInput with id "foo" draggable in shiny server
+#  server <- function(input, output) {
+#    jqui_draggable(ui = '#foo')
+#  }
 
 ## ---- eval = FALSE-------------------------------------------------------
 #  # in shiny ui, make each element in the tagList draggable
-#  jqui_draggabled(tagList(
-#    selectInput('sel', 'Select', choices = month.abb),
-#    checkboxGroupInput('chbox', 'Checkbox', choices = month.abb),
-#    plotOutput('plot', width = '400px', height = '400px')
-#  ))
+#  ui <- fluidPage(
+#    jqui_draggable(
+#      tagList(
+#        selectInput('sel', 'Select', choices = month.abb),
+#        checkboxGroupInput('chbox', 'Checkbox', choices = month.abb),
+#        plotOutput('plot', width = '400px', height = '400px')
+#      )
+#    )
+#  )
 
 ## ---- eval = FALSE-------------------------------------------------------
-#  # in shiny server
-#  jqui_draggable(selector = '#input', switch = FALSE)
+#  server <- function(input, output) {
+#    jqui_draggable("#sel,#chbox,#plot")
+#  }
 
 ## ---- echo=FALSE---------------------------------------------------------
 draggable_shiny <- data.frame(
@@ -81,7 +71,7 @@ selectable_shiny <- data.frame(
   Interaction_type = 'selectable',
   suffix = c('selected', 'is_selecting'),
   `The_returned_shiny_input_value` = c(
-    'A dataframe containing the id and innerHTML of curently selected elements',
+    'A dataframe containing the id and innerText of curently selected items',
     'TRUE or FALSE that indicate whether the element is selecting (e.g. during lasso selection)'
   )
 )
@@ -90,7 +80,7 @@ sortable_shiny <- data.frame(
   Interaction_type = 'sortable',
   suffix = c('order'),
   `The_returned_shiny_input_value` = c(
-    'A dataframe containing the id and innerHTML of curently order of elements'
+    'A dataframe containing the id and innerText of items in the current order'
   )
 )
 
@@ -105,17 +95,17 @@ knitr::kable(rbind(draggable_shiny, droppable_shiny, resizable_shiny,
 #    suffix1 = list(
 #      # on event_type1 run callback1 and send the returned value to input$id_suffix1
 #      event_type1 = JS(callback1),
-#      # on event_type2 run callback2 and send the returned value to input$id_suffix1
-#      event_type2 = JS(callback2),
+#      # on event_type2 or event_type3 run callback2 and send the returned value to input$id_suffix1
+#      `event_type2 event_type3` = JS(callback2),
 #      ...
 #    ),
 #  
-#    # define shiny input value input$id_suffix2
+#    # define another shiny input value input$id_suffix2
 #    suffix2 = list(
 #      ...
 #    ),
 #  
-#    # define other shiny input values
+#    # define more shiny input values
 #  
 #  )
 #  
@@ -129,15 +119,13 @@ knitr::kable(rbind(draggable_shiny, droppable_shiny, resizable_shiny,
 #  # server
 #  jqui_draggable('#foo', options = list(
 #    shiny = list(
-#      # By default, draggable element has a shiny input value showing the element's
-#      # position (relative to the parent element). Here, another shiny input
-#      # value is added. It gives the element's offset (position relative to the
-#      # document). Using input$foo_offset to get access to it .
+#      # By default, draggable element has a shiny input value showing the
+#      # element's position (relative to the parent element). Here, another shiny
+#      # input value (input$foo_offset) is added. It gives the element's offset
+#      # (position relative to the document).
 #      offset = list(
-#        # return the initiated offset value when the draggable is created
-#        dragcreate = JS('function(event, ui) { return $(event.target).offset(); }'),
-#        # update the offset value while dragging
-#        drag = JS('function(event, ui) { return $(event.target).offset(); }')
+#        # return the updated offset value when the draggable is created or dragging
+#        `dragcreate drag` = JS('function(event, ui) {return $(event.target).offset();}'),
 #      )
 #    )
 #  ))
@@ -169,13 +157,13 @@ knitr::kable(rbind(draggable_shiny, droppable_shiny, resizable_shiny,
 #                                        minWidth = 200, maxWidth = 400))
 #  
 #  # make the two plotOutputs resize synchronously
-#  jqui_resizabled(plotOutput('plot1', width = '400px', height = '400px'),
+#  jqui_resizable(plotOutput('plot1', width = '400px', height = '400px'),
 #                    options = list(alsoResize = '#plot2')),
 #  plotOutput('plot2', width = '400px', height = '400px')
 
 ## ---- eval = FALSE-------------------------------------------------------
 #  # highlight the selected plotOutput
-#  jqui_selectabled(
+#  jqui_selectable(
 #    div(
 #      plotOutput('plot1', width = '400px', height = '400px'),
 #      plotOutput('plot2', width = '400px', height = '400px')
