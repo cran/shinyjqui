@@ -1,7 +1,7 @@
 Package: shinyjqui
 Type: Package
 Title: 'jQuery UI' Interactions and Effects for Shiny
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: person("Yang", "Tang", email = "tang_yang@outlook.com",
   role = c("aut", "cre"))
 Maintainer: Yang Tang <tang_yang@outlook.com>
@@ -18,7 +18,7 @@ BugReports: https://github.com/yang-tang/shinyjqui/issues
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2018-07-01 15:31:26 UTC; Yang
+Packaged: 2018-07-08 12:14:26 UTC; Yang
 Author: Yang Tang [aut, cre]
 Repository: CRAN
-Date/Publication: 2018-07-01 15:50:02 UTC
+Date/Publication: 2018-07-08 12:30:03 UTC
