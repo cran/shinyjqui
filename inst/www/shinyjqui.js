@@ -45,21 +45,24 @@ shinyjqui = function() {
 
     if(id) {
 
+      // make a hard copy of default_shiny_opt, so, any modification won't hurt the default settings
+      var default_opt = Object.assign({}, default_shiny_opt);
+
       if(opt && opt.hasOwnProperty('shiny')) {
-        // remove keys in default_shiny_opt that have duplicated input_suffix
+        // remove keys in default_opt that have duplicated input_suffix
         // but with a input_handler.
-        var suffix = Object.keys(default_shiny_opt);
+        var suffix = Object.keys(default_opt);
         $.each(suffix, function(i, v){
           if($.inArray(v.replace(/:.+/, ''), Object.keys(opt.shiny)) >= 0) {
-            delete default_shiny_opt[v];
+            delete default_opt[v];
           }
         });
-        // overwrite default_shiny_opt with user provided opt.shiny
-        $.extend(default_shiny_opt, opt.shiny);
+        // overwrite default_opt with user provided opt.shiny
+        $.extend(default_opt, opt.shiny);
         delete opt.shiny;
       }
 
-      regShinyInput(el, id, default_shiny_opt);
+      regShinyInput(el, id, default_opt);
 
     }
 
@@ -102,12 +105,14 @@ shinyjqui = function() {
       return e;
     });
 
-    console.log('===================');
-    console.log('ELEMENTS: ');
-    console.log($els);
-    console.log('MSG: ');
-    console.log(msg);
-    console.log('===================');
+    if(msg.debug) {
+      console.log('===================');
+      console.log('ELEMENTS: ');
+      console.log($els);
+      console.log('MSG: ');
+      console.log(msg);
+      console.log('===================');
+    }
 
     return {
       elements    : $els,
@@ -745,4 +750,10 @@ shinyjqui = function() {
 
 }();
 
-$(function(){ shinyjqui.init(); });
+// Stop using $(shinyjqui.init)
+// as of jQuery 3.x used by shiny 1.4.0 and above, the $(fn) syntax is called asynchronously
+// so, if we still use $(shinyjqui.init), the function `shinyjqui.init` will wait for
+// other js code to run, this will cause shiny clientside to receive the `CustomMessage` by
+// `session$sendCustomMessage("shinyjqui", message)` from server before the correponding
+// `CustomMessageHandler` is registed by `shinyjqui.init()`
+shinyjqui.init();

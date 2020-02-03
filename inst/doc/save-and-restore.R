@@ -1,10 +1,10 @@
-## ----setup, include = FALSE----------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 
-## ---- echo=FALSE, results='asis'-----------------------------------------
+## ---- echo=FALSE, results='asis'----------------------------------------------
 tbl <- data.frame(
   Interactions = c("draggable", "resizable", "selectable", "sortable"),
   State = c(
@@ -16,7 +16,7 @@ tbl <- data.frame(
 )
 knitr::kable(tbl)
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  ui <- fluidPage(
 #    actionButton("save", "Save position"),
 #    actionButton("restore", "Restore position"),
@@ -37,7 +37,7 @@ knitr::kable(tbl)
 #  
 #  shinyApp(ui, server)
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  ui <- fluidPage(
 #    actionButton("save", "Save order"),
 #    actionButton("restore", "Restore order"),
@@ -56,7 +56,7 @@ knitr::kable(tbl)
 #  
 #  shinyApp(ui, server)
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  
 #  ui <- function(request) {
 #    fluidPage(

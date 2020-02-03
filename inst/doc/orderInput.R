@@ -1,8 +1,8 @@
-## ---- include=FALSE------------------------------------------------------
+## ---- include=FALSE-----------------------------------------------------------
 library(shiny)
 library(shinyjqui)
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  server <- function(input, output) {
 #    output$order <- renderPrint({input$foo_order})
 #  }
@@ -14,22 +14,22 @@ library(shinyjqui)
 #  
 #  shinyApp(ui, server)
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  # items in A can be dragged to B
 #  orderInput('A', 'A', items = 1:3, connect = 'B')
 #  # items in B can be dragged to A
 #  orderInput('B', 'B', items = 4:6, connect = 'A')
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  # In source mode, items dragged to B are copied
 #  orderInput('A', 'A', items = 1:3, connect = 'B', as_source = TRUE)
 #  orderInput('B', 'B', items = 4:6)
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  orderInput('A', 'A', items = 1:3, connect = 'B')
 #  orderInput('B', 'B', items = NULL, placeholder = 'Drag item here...')
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  orderInput('default', 'default', items = 1:3, item_class = 'default')
 #  orderInput('primary', 'primary', items = 1:3, item_class = 'primary')
 #  orderInput('success', 'success', items = 1:3, item_class = 'success')

@@ -1,14 +1,14 @@
-## ---- include=FALSE------------------------------------------------------
+## ---- include=FALSE-----------------------------------------------------------
 library(shiny)
 library(shinyjqui)
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  # create a draggable textInput in shiny ui
 #  ui <- fluidPage(
 #    jqui_draggable(textInput('foo', 'Input'))
 #  )
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  # create a textInput in shiny ui
 #  ui <- fluidPage(
 #    textInput('foo', 'Input')
@@ -19,7 +19,7 @@ library(shinyjqui)
 #    jqui_draggable(ui = '#foo')
 #  }
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  # in shiny ui, make each element in the tagList draggable
 #  ui <- fluidPage(
 #    jqui_draggable(
@@ -31,12 +31,12 @@ library(shinyjqui)
 #    )
 #  )
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  server <- function(input, output) {
 #    jqui_draggable("#sel,#chbox,#plot")
 #  }
 
-## ---- echo=FALSE---------------------------------------------------------
+## ---- echo=FALSE--------------------------------------------------------------
 draggable_shiny <- data.frame(
   Interaction_type = 'draggable',
   suffix = c('position', 'is_dragging'),
@@ -88,7 +88,7 @@ knitr::kable(rbind(draggable_shiny, droppable_shiny, resizable_shiny,
                    selectable_shiny, sortable_shiny))
 
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  shiny_opt = list(
 #  
 #    # define shiny input value input$id_suffix1
@@ -115,7 +115,7 @@ knitr::kable(rbind(draggable_shiny, droppable_shiny, resizable_shiny,
 #    #other draggable-specific options
 #  ))
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  # server
 #  jqui_draggable('#foo', options = list(
 #    shiny = list(
@@ -130,13 +130,13 @@ knitr::kable(rbind(draggable_shiny, droppable_shiny, resizable_shiny,
 #    )
 #  ))
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  # drag only horizontally
 #  jqui_draggable('#foo', options = list(axis = 'x'))
 #  # make movement snapping to a 80 x 80 grid
 #  jqui_draggable('#foo', options = list(grid = c(80, 80)))
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  jqui_droppable('#foo', options = list(
 #    accept = '#bar', # jQuery selector to define which draggable element to monitor. Accept anything if not set.
 #    classes = list(
@@ -148,7 +148,7 @@ knitr::kable(rbind(draggable_shiny, droppable_shiny, resizable_shiny,
 #    ) # a javascrip callback to change class when draggable element is dropped in
 #  ))
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  # keep aspect ratio when resizing
 #  jqui_resizable('#foo', options = list(aspectRatio = TRUE))
 #  
@@ -161,7 +161,7 @@ knitr::kable(rbind(draggable_shiny, droppable_shiny, resizable_shiny,
 #                    options = list(alsoResize = '#plot2')),
 #  plotOutput('plot2', width = '400px', height = '400px')
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  # highlight the selected plotOutput
 #  jqui_selectable(
 #    div(
@@ -171,7 +171,7 @@ knitr::kable(rbind(draggable_shiny, droppable_shiny, resizable_shiny,
 #    options = list(classes = list(`ui-selected` = 'ui-state-highlight'))
 #  )
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  # change opacity while sorting
 #  jqui_sortable('#foo', options = list(opacity = 0.5))
 #  
@@ -183,10 +183,10 @@ knitr::kable(rbind(draggable_shiny, droppable_shiny, resizable_shiny,
 #  jqui_sortable('#foo2', options = list(connectWith = '#foo1'))
 #  
 
-## ---- echo=FALSE---------------------------------------------------------
+## ---- echo=FALSE--------------------------------------------------------------
 get_jqui_effects()
 
-## ---- echo=FALSE---------------------------------------------------------
+## ---- echo=FALSE--------------------------------------------------------------
 func_intro <- data.frame(Functions = c('jqui_effect', 'jqui_show', 'jqui_hide', 'jqui_toggle'), 
                          Description = c('Let element(s) to show an animation immediately.',
                                          'Display hidden element(s) with an animation',
@@ -196,7 +196,7 @@ func_intro <- data.frame(Functions = c('jqui_effect', 'jqui_show', 'jqui_hide', 
                          stringsAsFactors = FALSE)
 knitr::kable(func_intro, row.names = FALSE)
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  # ui
 #  plotOutput('foo', width = '400px', height = '400px')
 #  
@@ -206,7 +206,7 @@ knitr::kable(func_intro, row.names = FALSE)
 #  jqui_hide('#foo', effect = 'size', options = list(width = 200, height = 60)) # resize then hide
 #  jqui_show('#foo', effect = 'clip') # show the plot by clipping
 
-## ---- echo=FALSE---------------------------------------------------------
+## ---- echo=FALSE--------------------------------------------------------------
 func_intro <- data.frame(Functions = c('jqui_add_class', 'jqui_remove_class', 'jqui_switch_class'), 
                          Description = c('Add class(es) to element(s) while animating all style changes.',
                                          'Remove class(es) from element(s) while animating all style changes.',
