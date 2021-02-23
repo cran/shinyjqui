@@ -8,7 +8,7 @@
 \title{Class effects.}
 \usage{
 jqui_add_class(
-  selector,
+  ui,
   className,
   duration = 400,
   easing = "swing",
@@ -16,7 +16,7 @@ jqui_add_class(
 )
 
 jqui_remove_class(
-  selector,
+  ui,
   className,
   duration = 400,
   easing = "swing",
@@ -24,7 +24,7 @@ jqui_remove_class(
 )
 
 jqui_switch_class(
-  selector,
+  ui,
   removeClassName,
   addClassName,
   duration = 400,
@@ -33,8 +33,12 @@ jqui_switch_class(
 )
 }
 \arguments{
-\item{selector}{Deprecated, just keep for backward compatibility.
-Please use \code{ui} and \code{operation} parameters instead.}
+\item{ui}{The target ui element(s) to be manipulated. Can be
+\itemize{
+\item A string of \href{https://api.jquery.com/category/selectors/}{jQuery_selector}
+\item A \link[htmlwidgets:JS]{JS()} wrapped javascript expression that returns a
+\href{https://api.jquery.com/Types/}{jQuery object}.
+}}
 
 \item{className}{One or more class names (space separated) to be added to or
 removed from the class attribute of each matched element.}
@@ -43,7 +47,7 @@ removed from the class attribute of each matched element.}
 run.}
 
 \item{easing}{A string indicating which
-\href{http://api.jqueryui.com/easings/}{easing} function to use for the
+\href{https://api.jqueryui.com/easings/}{easing} function to use for the
 transition.}
 
 \item{complete}{A js function to call once the animation is complete, called
@@ -66,9 +70,9 @@ changes.
 }
 \details{
 These functions are the R wrappers of
-\href{http://api.jqueryui.com/addClass/}{addClass()},
-\href{http://api.jqueryui.com/removeClass/}{removeClass()} and
-\href{http://api.jqueryui.com/switchClass/}{switchClass()} from jQuery UI library.
+\href{https://api.jqueryui.com/addClass/}{addClass()},
+\href{https://api.jqueryui.com/removeClass/}{removeClass()} and
+\href{https://api.jqueryui.com/switchClass/}{switchClass()} from jQuery UI library.
 They should be used in \code{server} of a shiny app.
 }
 \examples{

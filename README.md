@@ -1,16 +1,26 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-shinyjqui
-=========
 
-[![Travis-CI Build Status](https://travis-ci.org/Yang-Tang/shinyjqui.svg?branch=master)](https://travis-ci.org/Yang-Tang/shinyjqui) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/Yang-Tang/shinyjqui?branch=master&svg=true)](https://ci.appveyor.com/project/Yang-Tang/shinyjqui) [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/shinyjqui)](https://cran.r-project.org/package=shinyjqui)
+# shinyjqui
 
-The shinyjqui package is an R wrapper for [jQuery UI](http://jqueryui.com/) javascript library. It allows user to easily add interactions and animation effects to a shiny app.
+<!-- badges: start -->
 
-Installation
-------------
+[![R-CMD-check](https://github.com/Yang-Tang/shinyjqui/workflows/R-CMD-check/badge.svg)](https://github.com/Yang-Tang/shinyjqui/actions)[![Travis-CI
+Build
+Status](https://travis-ci.org/Yang-Tang/shinyjqui.svg?branch=master)](https://travis-ci.org/Yang-Tang/shinyjqui)
+[![AppVeyor Build
+Status](https://ci.appveyor.com/api/projects/status/github/Yang-Tang/shinyjqui?branch=master&svg=true)](https://ci.appveyor.com/project/Yang-Tang/shinyjqui)
+[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/shinyjqui)](https://cran.r-project.org/package=shinyjqui)
+<!-- badges: end -->
 
-You can install the stable version from CRAN, or the development version from github with:
+The shinyjqui package is an R wrapper for [jQuery
+UI](https://jqueryui.com/) javascript library. It allows user to easily
+add interactions and animation effects to a shiny app.
+
+## Installation
+
+You can install the stable version from CRAN, or the development version
+from github with:
 
 ``` r
 # install from CRAN
@@ -20,8 +30,7 @@ install.packages('shinyjqui')
 devtools::install_github("yang-tang/shinyjqui")
 ```
 
-Usage
------
+## Usage
 
 ``` r
 # load packages
@@ -31,13 +40,14 @@ library(ggplot2)
 library(highcharter)
 ```
 
--   **Draggable:** Allow elements to be moved using the mouse
+  - **Draggable:** Allow elements to be moved using the mouse
+
+<!-- end list -->
 
 ``` r
 server <- function(input, output) {}
 
 ui <- fluidPage(
-  # for shinyjqui v0.2.0 or lower, please use jqui_draggabled instead 
   jqui_draggable(fileInput('file', 'File'))
 )
 
@@ -46,7 +56,9 @@ shinyApp(ui, server)
 
 ![](inst/fig/README-draggable.gif)
 
--   **Resizable:** Change the size of an element using the mouse.
+  - **Resizable:** Change the size of an element using the mouse.
+
+<!-- end list -->
 
 ``` r
 server <- function(input, output) {
@@ -56,7 +68,6 @@ server <- function(input, output) {
 }
 
 ui <- fluidPage(
-  # for shinyjqui v0.2.0 or lower, please use jqui_resizabled instead
   jqui_resizable(plotOutput('gg', width = '200px', height = '200px'))
 )
 
@@ -65,7 +76,9 @@ shinyApp(ui, server)
 
 ![](inst/fig/README-resizable.gif)
 
--   **Sortable:** Reorder elements in a list or grid using the mouse.
+  - **Sortable:** Reorder elements in a list or grid using the mouse.
+
+<!-- end list -->
 
 ``` r
 server <- function(input, output) {
@@ -81,7 +94,6 @@ server <- function(input, output) {
 }
 
 ui <- fluidPage(
-  # for shinyjqui v0.2.0 or lower, please use jqui_sortabled instead
   jqui_sortable(div(id = 'plots',
                      highchartOutput('hc', width = '200px', height = '200px'),
                      plotOutput('gg', width = '200px', height = '200px')))
@@ -92,7 +104,10 @@ shinyApp(ui, server)
 
 ![](inst/fig/README-sortable.gif)
 
--   **Animation Effects:** Apply an animation effect to an element. Effects can also be used in hide or show.
+  - **Animation Effects:** Apply an animation effect to an element.
+    Effects can also be used in hide or show.
+
+<!-- end list -->
 
 ``` r
 server <- function(input, output) {
@@ -124,7 +139,10 @@ shinyApp(ui, server)
 
 ![](inst/fig/README-effects.gif)
 
--   **Classes transformation:** Add and remove class(es) to elements while animating all style changes.
+  - **Classes transformation:** Add and remove class(es) to elements
+    while animating all style changes.
+
+<!-- end list -->
 
 ``` r
 server <- function(input, output) {
@@ -171,7 +189,10 @@ shinyApp(ui, server)
 
 ![](inst/fig/README-classes.gif)
 
--   **orderInput():** Display a list of items. Their order can be changed by drag and drop.
+  - **orderInput():** Display a list of items. Their order can be
+    changed by drag and drop.
+
+<!-- end list -->
 
 ``` r
 server <- function(input, output) {
@@ -190,7 +211,9 @@ shinyApp(ui, server)
 
 ![](inst/fig/README-orderInput.gif)
 
--   **sortableTableOutput():** Render a HTML table with sortable rows.
+  - **sortableTableOutput():** Render a HTML table with sortable rows.
+
+<!-- end list -->
 
 ``` r
 ui <- fluidPage(
@@ -211,7 +234,10 @@ shinyApp(ui, server)
 
 ![](inst/fig/README-sortableTableOutput.gif)
 
--   **selectableTableOutput():** Render a HTML table with selectable rows or cells.
+  - **selectableTableOutput():** Render a HTML table with selectable
+    rows or cells.
+
+<!-- end list -->
 
 ``` r
 ui <- fluidPage(

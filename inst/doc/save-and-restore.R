@@ -25,7 +25,7 @@ knitr::kable(tbl)
 #  )
 #  
 #  server <- function(input, output) {
-#    # on save button clicked, save the current postion of the textInput
+#    # on save button clicked, save the current position of the textInput
 #    observeEvent(input$save, {
 #      jqui_draggable("#foo", operation = "save")
 #    })
@@ -52,6 +52,43 @@ knitr::kable(tbl)
 #    observeEvent(input$restore, {
 #      jqui_sortable("#foo1,#foo2", operation = "load")
 #    })
+#  }
+#  
+#  shinyApp(ui, server)
+
+## ---- eval=FALSE--------------------------------------------------------------
+#  ui <- fluidPage(
+#    actionButton("s", "Small"),
+#    actionButton("m", "Medium"),
+#    actionButton("l", "Large"),
+#    jqui_resizable(plotOutput('gg', width = '200px', height = '200px'))
+#  )
+#  
+#  server <- function(input, output) {
+#    output$gg <- renderPlot({
+#      ggplot(mtcars, aes(x = cyl, y = mpg)) + geom_point()
+#    })
+#    observeEvent(input$s,
+#                 jqui_resizable(
+#                   ui        = "#gg",
+#                   operation = "load",
+#                   options   = list(state = list(width  = 100, height = 100))
+#                 )
+#    )
+#    observeEvent(input$m,
+#                 jqui_resizable(
+#                   ui        = "#gg",
+#                   operation = "load",
+#                   options   = list(state = list(width  = 200, height = 200))
+#                 )
+#    )
+#    observeEvent(input$l,
+#                 jqui_resizable(
+#                   ui        = "#gg",
+#                   operation = "load",
+#                   options   = list(state = list(width  = 400, height = 400))
+#                 )
+#    )
 #  }
 #  
 #  shinyApp(ui, server)

@@ -1,5 +1,8 @@
 shinyjqui = function() {
 
+  // See if we're running in Shiny mode. Obtained from htmlwidgets htmlwidgets.js
+  var shinyMode = typeof(window.Shiny) !== "undefined" && !!window.Shiny.outputBindings;
+
   // If the target element has class "shiny-bound-input", which usually the case
   // when user uses an id to refer to a shiny input, we should redirect this
   // target element to its shiny-input-container so that the whole shiny input
@@ -40,6 +43,8 @@ shinyjqui = function() {
   };
 
   var handleShinyInput = function(el, opt, default_shiny_opt) {
+
+    if(!shinyMode) {return null;}
 
     var id = shinyjqui.getId(el);
 
@@ -95,9 +100,11 @@ shinyjqui = function() {
       console.warn("The selector didn't match any element. Operation abort.");
       return;
     }
-    $els.removeClass(function(index, className){
-      return (className.match (/(^|\s)jqui-interaction-\S+/g) || []).join(' ');
-    });
+    // stop removing the jqui-interaction-xxx class as it will cause the nested
+    // interactions stop working.
+    //$els.removeClass(function(index, className){
+    //  return (className.match (/(^|\s)jqui-interaction-\S+/g) || []).join(' ');
+    //});
     $els = $els.map(function(i, e){
       e = getInputContainer(e);
       e = addWrapper(e);
@@ -173,8 +180,10 @@ shinyjqui = function() {
   var addWrapper = function(el) {
 
     if($(el).parent().hasClass("jqui-wrapper")) { return el; }
+    // the static htmlwidget is auto-wrapped, return its parent with no more action
+    if($(el).parent().attr("id") == "htmlwidget_container") { return $(el).parent().get(0); }
 
-    var pattern = /action-button|html-widget-output|shiny-.+?-output/;
+    var pattern = /action-button|html-widget-output|shiny-.+?-output|html-widget-static-bound/;
     if(!pattern.test($(el).attr('class'))) { return el; }
 
     var $wrapper = $('<div></div>')
@@ -527,7 +536,7 @@ shinyjqui = function() {
       getState : function(el) {
         // .ui-draggable are items from draggable-connectToSortable,
         // this should be more restrict in later changes
-        var $items = $(el).find(".ui-sortable-handle,.ui-draggable");
+        var $items = $(el).find(".ui-sortable-handle,.ui-draggable").clone();
         // don't use toArray here
         var index = $items.map(function(i, e) {
           return $(e).attr("jqui_sortable_idx");
@@ -541,48 +550,80 @@ shinyjqui = function() {
       setState : function(el, state) {
         var $el = $(el);
 
-        var $items_to_restore;
-        if(state.items instanceof jQuery) {
-          // client mode
-          $items_to_restore = state.items;
-        } else {
-          // shiny bookmarking mode
-          if(!Array.isArray(state.index)) {
-            // if there is only one index, change it to an array
-            state.index = Array(state.index);
-          }
-          $items_to_restore = $(state.index).map(function(i, v) {
-            return $("[jqui_sortable_idx=" + v + "]").get(0)
-          });
-
-        }
-
-        var $items_to_remove = $el.find(".ui-sortable-handle");
+        // Identify the container of sortable items. Note, the container is not
+        // necessarily has `.ui-sortable` class
+        var $current_Items = $el.find(".ui-sortable-handle,.ui-draggable");
 
         // use $el instead in case no item to remove
-        var $container = $items_to_remove.length ? $items_to_remove.parent() : $el
+        var $container = $current_Items.length ? $current_Items.parent() : $el
 
-        // Use this to store the container of restore items. if the item is from
-        // other sortable group, its container will be different from current
-        // $el, then should trigger "sortupdate" of that sortable group to update
-        // shiny input values.
-        var $thiscontainer;
-        $items_to_restore.each(function(i, e) {
-          if($(e).hasClass("ui-draggable")) {
-            $(e).clone().appendTo($container);
-          } else {
-            $thiscontainer = $(e).closest(".ui-sortable");
-            $(e).appendTo($container);
-            // also trigger "sortupdate" of other container
-            if(!$thiscontainer.is($el)) {
-              $thiscontainer.trigger("sortupdate");
-            }
+        // The restoration is performed differently in client and bookmarking
+        // mode.
+        if(state.items instanceof jQuery) {
+          // client mode
+          // In client mode, we can safely remove all the current sortable items
+          // before appending the new items, because all the items have backups
+          // (deep copied) in `$(el).data("shinyjqui").sortable.save.state.items`
+          $current_Items.remove();
+          $container.append(state.items);
+        } else {
+          // shiny bookmarking mode
+          // In bookmarking mode, we don't have backups. The
+          // restoration was performed based on indexing. So, we should be very
+          // careful and try to avoid accidently removing the items that could be
+          // used by other sortable elements
+
+          if(!Array.isArray(state.index)) {
+            // if there is only one index, convert it to an array
+            state.index = Array(state.index);
           }
-        });
-        //$container.append($items_to_restore);
-        // this doesn't trigger "sortupdate" ?
-        //$el.data("uiSortable")._mouseStop(null);
+
+          // move all current items to temp
+          var $current_items_copy = $current_Items.clone();
+          var shinyjqui_temp = $("body").data("shinyjquiTemp");
+          if(shinyjqui_temp) {
+            $("body").data("shinyjquiTemp", shinyjqui_temp.add($current_items_copy));
+          } else {
+            $("body").data("shinyjquiTemp", $current_items_copy);
+          }
+          $current_Items.remove();
+
+          var $source_el;
+          // locate and move each items
+          $.each(state.index, function(i, v){
+
+            // find item in temp
+            var myitem = $("body").data("shinyjquiTemp").filter("[jqui_sortable_idx=" + v + "]").first();
+            if(myitem.length == 1) {
+              $container.append(myitem);
+              return true;
+            }
+
+            // find item in body
+            myitem = $("[jqui_sortable_idx=" + v + "]").first();
+            if(myitem.length == 0) {
+              console.warn("Can't find item [jqui_sortable_idx=" + v + "] durining bookmarking restoration!");
+              return true;
+            }
+
+            if(myitem.hasClass("ui-draggable")) {
+              // For `.ui-draggable` items, just copy and paste
+              myitem.clone().appendTo($container);
+            } else {
+              // For `ui-sortable-handle` items, need to locate their own
+              // sortable element ($source_el), after cut and paste, we should
+              // trigger the `sortupdate` of the original sortable element.
+              $source_el = myitem.closest(".ui-sortable");
+              myitem.appendTo($container);
+              $source_el.trigger("sortupdate");
+            }
+
+          })
+
+        }
+        // Trigger update of the current sortable element to update shiny values.
         $el.trigger("sortupdate");
+
       },
 
       shiny : {
@@ -595,7 +636,13 @@ shinyjqui = function() {
         },
         "order:shinyjqui.df" : {
           "sortcreate sortupdate" : function(event, ui) {
-            var $items = $(event.target).find('.ui-sortable-handle');
+            // In "copy" mode (by `connectToSortable` option), the items will have
+            // class `ui-draggable-handle` instead of `ui-sortable-handle`, so
+            // we use attr `jqui_sortable_idx` here to find all the items.
+            // The attr `jqui_sortable_idx` was added by function `addIndex` for
+            // bookmarking.
+            //var $items = $(event.target).find('.ui-sortable-handle');
+            var $items = $(event.target).find('[jqui_sortable_idx]');
             var text = $items.map(function(i, e){
               // use empty string for `undefined` to keep the same length as ids
               return e.innerText ? e.innerText : ""
@@ -652,9 +699,10 @@ shinyjqui = function() {
 
     load : function(el, interaction, save) {
       var $el = $(el);
+      // Always initiate interaction if not yet.
       if(!$el.hasClass("ui-" + interaction)) {
-        console.warn("Interaction not initiated. Operation abort.");
-        return;
+        console.warn("Interaction not initiated. Will run initiation first.");
+        $el[interaction]();
       }
       var saving = save ? save : $el.data("shinyjqui")[interaction].save;
       if(!saving) {
@@ -728,7 +776,13 @@ shinyjqui = function() {
 
       } else if(type === 'effect') {
 
-          $els[func](opt);
+          // use variable parameter instead of object parameter to add support
+          // to the effect-specific properties and options
+          //$els[func](opt);
+          $els[func](effect   = opt.effect,
+                     options  = opt.options,
+                     duration = opt.duration,
+                     complete = opt.complete);
 
       } else if(type === 'class') {
 
@@ -738,12 +792,20 @@ shinyjqui = function() {
             $els.switchClass(opt.removeClassName, opt.addClassName, opt);
           }
 
+      } else if(type === 'other') {
+
+          if(func === 'position') {
+            $els.position(opt);
+          }
+
       }
 
     },
 
     init : function() {
-      Shiny.addCustomMessageHandler('shinyjqui', shinyjqui.msgCallback);
+      if(shinyMode) {
+        Shiny.addCustomMessageHandler('shinyjqui', shinyjqui.msgCallback);
+      }
     }
 
   };

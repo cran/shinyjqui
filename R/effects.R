@@ -1,3 +1,19 @@
+animationEffects <- function(ui, func, effect, options, duration, complete) {
+  effect <- match.arg(effect, choices = get_jqui_effects())
+  if (effect == "transfer" && func %in% c("show", "hide", "toggle")) {
+    stop("The transfer effect is not supported in show/hide/toggle.")
+  }
+  type <- "effect"
+  options <- list(
+    effect = effect,
+    options = options,
+    duration = duration,
+    complete = complete
+  )
+  rm(effect, duration, complete)
+  sendMsg()
+}
+
 
 #' Animation effects.
 #'
@@ -14,14 +30,17 @@
 #' [`toggle()`](https://api.jqueryui.com/toggle/) from jQuery UI library. They
 #' should be used in `server` of a shiny document.
 #'
-#' @inheritParams Interactions
 #'
+#' @param ui The target ui element(s) to be manipulated. Can be
+#'   * A string of [jQuery_selector](https://api.jquery.com/category/selectors/)
+#'   * A [JS()][htmlwidgets::JS()] wrapped javascript expression that returns a
+#'   [jQuery object](https://api.jquery.com/Types/).
 #' @param effect A string indicating which
-#'   [animation effect](http://jqueryui.com/effect/) to use for the
+#'   [animation effect](https://jqueryui.com/effect/) to use for the
 #'   transition.
 #' @param options A list of effect-specific
-#'   [properties](http://api.jqueryui.com/category/effects/) and
-#'   [easing](http://api.jqueryui.com/easings/).
+#'   [properties](https://api.jqueryui.com/category/effects/) and
+#'   [easing](https://api.jqueryui.com/easings/).
 #' @param duration A string or number determining how long the animation will
 #'   run.
 #' @param complete A function to call once the animation is complete, called
@@ -34,90 +53,37 @@ NULL
 
 #' @rdname Animation_effects
 #' @export
-jqui_effect <- function(selector, effect, options = NULL,
+jqui_effect <- function(ui, effect, options = NULL,
                         duration = 400, complete = NULL) {
-  ui <- selector
-  remove(selector)
-  effect <- match.arg(effect, choices = get_jqui_effects())
-  type <- "effect"
   func <- "effect"
-  options <- list(
-    effect = effect,
-    options = options,
-    duration = duration,
-    complete = complete
-  )
-  rm(effect, duration, complete)
-  sendMsg()
+  animationEffects(ui, func, effect, options, duration, complete)
 }
 
 
 #' @rdname Animation_effects
 #' @export
-jqui_show <- function(selector, effect, options = NULL,
+jqui_show <- function(ui, effect, options = NULL,
                       duration = 400, complete = NULL) {
-  ui <- selector
-  remove(selector)
-  effect <- match.arg(effect, choices = get_jqui_effects())
-  if (effect == "transfer") {
-    stop("The transfer effect is not supported in show/hide/toggle.")
-  }
-  type <- "effect"
   func <- "show"
-  options <- list(
-    effect = effect,
-    options = options,
-    duration = duration,
-    complete = complete
-  )
-  rm(effect, duration, complete)
-  sendMsg()
+  animationEffects(ui, func, effect, options, duration, complete)
 }
 
 
 #' @rdname Animation_effects
 #' @export
-jqui_hide <- function(selector, effect, options = NULL,
+jqui_hide <- function(ui, effect, options = NULL,
                       duration = 400, complete = NULL) {
-  ui <- selector
-  remove(selector)
-  effect <- match.arg(effect, choices = get_jqui_effects())
-  if (effect == "transfer") {
-    stop("The transfer effect is not supported in show/hide/toggle.")
-  }
-  type <- "effect"
   func <- "hide"
-  options <- list(
-    effect = effect,
-    options = options,
-    duration = duration,
-    complete = complete
-  )
-  rm(effect, duration, complete)
-  sendMsg()
+  animationEffects(ui, func, effect, options, duration, complete)
 }
 
 
 #' @rdname Animation_effects
 #' @export
-jqui_toggle <- function(selector, effect, options = NULL,
+jqui_toggle <- function(ui, effect, options = NULL,
                         duration = 400, complete = NULL) {
-  ui <- selector
-  remove(selector)
-  effect <- match.arg(effect, choices = get_jqui_effects())
-  if (effect == "transfer") {
-    stop("The transfer effect is not supported in show/hide/toggle.")
-  }
-  type <- "effect"
   func <- "toggle"
-  options <- list(
-    effect = effect,
-    options = options,
-    duration = duration,
-    complete = complete
-  )
-  rm(effect, duration, complete)
-  sendMsg()
+  animationEffects(ui, func, effect, options, duration, complete)
 }
 
 
@@ -147,19 +113,21 @@ get_jqui_effects <- function() {
 #' * `jqui_switch_class()`: Switch class(es).
 #'
 #' These functions are the R wrappers of
-#' [addClass()](http://api.jqueryui.com/addClass/),
-#' [removeClass()](http://api.jqueryui.com/removeClass/) and
-#' [switchClass()](http://api.jqueryui.com/switchClass/) from jQuery UI library.
+#' [addClass()](https://api.jqueryui.com/addClass/),
+#' [removeClass()](https://api.jqueryui.com/removeClass/) and
+#' [switchClass()](https://api.jqueryui.com/switchClass/) from jQuery UI library.
 #' They should be used in `server` of a shiny app.
 #'
-#' @inheritParams Interactions
-#'
+#' @param ui The target ui element(s) to be manipulated. Can be
+#'   * A string of [jQuery_selector](https://api.jquery.com/category/selectors/)
+#'   * A [JS()][htmlwidgets::JS()] wrapped javascript expression that returns a
+#'   [jQuery object](https://api.jquery.com/Types/).
 #' @param className One or more class names (space separated) to be added to or
 #'   removed from the class attribute of each matched element.
 #' @param duration A string or number determining how long the animation will
 #'   run.
 #' @param easing A string indicating which
-#'   [easing](http://api.jqueryui.com/easings/) function to use for the
+#'   [easing](https://api.jqueryui.com/easings/) function to use for the
 #'   transition.
 #' @param complete A js function to call once the animation is complete, called
 #'   once per matched element.
@@ -175,10 +143,8 @@ NULL
 
 #' @rdname Class_effects
 #' @export
-jqui_add_class <- function(selector, className, duration = 400,
+jqui_add_class <- function(ui, className, duration = 400,
                            easing = "swing", complete = NULL) {
-  ui <- selector
-  remove(selector)
   type <- "class"
   func <- "add"
   options <- list(
@@ -194,10 +160,8 @@ jqui_add_class <- function(selector, className, duration = 400,
 
 #' @rdname Class_effects
 #' @export
-jqui_remove_class <- function(selector, className, duration = 400,
+jqui_remove_class <- function(ui, className, duration = 400,
                               easing = "swing", complete = NULL) {
-  ui <- selector
-  remove(selector)
   type <- "class"
   func <- "remove"
   options <- list(
@@ -213,10 +177,8 @@ jqui_remove_class <- function(selector, className, duration = 400,
 
 #' @rdname Class_effects
 #' @export
-jqui_switch_class <- function(selector, removeClassName, addClassName,
+jqui_switch_class <- function(ui, removeClassName, addClassName,
                               duration = 400, easing = "swing", complete = NULL) {
-  ui <- selector
-  remove(selector)
   type <- "class"
   func <- "switch"
   options <- list(

@@ -1,40 +1,96 @@
-## ---- include=FALSE-----------------------------------------------------------
+## ---- include = FALSE---------------------------------------------------------
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+## ---- include = FALSE---------------------------------------------------------
 library(shiny)
 library(shinyjqui)
 
 ## ---- eval = FALSE------------------------------------------------------------
 #  # create a draggable textInput in shiny ui
 #  ui <- fluidPage(
-#    jqui_draggable(textInput('foo', 'Input'))
+#    jqui_draggable(textInput("foo", "Input"))
 #  )
 
 ## ---- eval = FALSE------------------------------------------------------------
-#  # create a textInput in shiny ui
+#  # create a textInput in shiny ui without mouse interaction
 #  ui <- fluidPage(
-#    textInput('foo', 'Input')
+#    textInput("foo", "Input")
 #  )
 #  
-#  # make the textInput with id "foo" draggable in shiny server
+#  # make the ui element with id "foo" draggable
 #  server <- function(input, output) {
-#    jqui_draggable(ui = '#foo')
+#    jqui_draggable(ui = "#foo", operation = "enable")
 #  }
 
+## ---- echo=FALSE--------------------------------------------------------------
+tbl <- data.frame(
+  Mode = c("ui", "server", "server", "non-shiny"),
+  Type = c("A `shiny.tag` or `shiny.tag.list` object",
+           "A string of [jQuery_selector](https://api.jquery.com/category/selectors/)",
+           "A `htmlwidgets::JS()` wrapped javascript expression that returns a [jQuery object](https://api.jquery.com/Types/)",
+           "A static `htmlwidget` object"),
+  Example = c("`tags$p('hello world')`, `textInput('caption', 'Caption', 'Data Summary')`, `plotOutput('myplot')`",
+              "`'#id1,#id2,#id3'`, `'.shiny-plot-output'`, `'div > p'`",
+              "`JS(\"$('#id').children()\")`",
+              "`plot_ly(z = ~volcano, type = \"surface\")`")
+)
+knitr::kable(tbl, escape = T)
+
 ## ---- eval = FALSE------------------------------------------------------------
-#  # in shiny ui, make each element in the tagList draggable
-#  ui <- fluidPage(
-#    jqui_draggable(
-#      tagList(
-#        selectInput('sel', 'Select', choices = month.abb),
-#        checkboxGroupInput('chbox', 'Checkbox', choices = month.abb),
-#        plotOutput('plot', width = '400px', height = '400px')
-#      )
-#    )
+#  # drag only horizontally
+#  jqui_draggable('#foo', options = list(axis = 'x'))
+#  # make movement snapping to a 80 x 80 grid
+#  jqui_draggable('#foo', options = list(grid = c(80, 80)))
+
+## ---- eval = FALSE------------------------------------------------------------
+#  jqui_droppable('#foo', options = list(
+#    accept = '#bar', # jQuery selector to define which draggable element to monitor. Accept anything if not set.
+#    classes = list(
+#      `ui-droppable-active` = 'ui-state-focus', # change class when draggable element is dragging
+#      `ui-droppable-hover` = 'ui-state-highlight' # change class when draggable element is dragging over
+#    ),
+#    drop = JS(
+#      'function(event, ui){$(this).addClass("ui-state-active");}'
+#    ) # a javascrip callback to change class when draggable element is dropped in
+#  ))
+
+## ---- eval = FALSE------------------------------------------------------------
+#  # keep aspect ratio when resizing
+#  jqui_resizable('#foo', options = list(aspectRatio = TRUE))
+#  
+#  # Limit the resizable element to a maximum or minimum height or width
+#  jqui_resizable('#foo', options = list(minHeight = 100, maxHeight = 300,
+#                                        minWidth = 200, maxWidth = 400))
+#  
+#  # make the two plotOutputs resize synchronously
+#  jqui_resizable(plotOutput('plot1', width = '400px', height = '400px'),
+#                    options = list(alsoResize = '#plot2')),
+#  plotOutput('plot2', width = '400px', height = '400px')
+
+## ---- eval = FALSE------------------------------------------------------------
+#  # highlight the selected plotOutput
+#  jqui_selectable(
+#    div(
+#      plotOutput('plot1', width = '400px', height = '400px'),
+#      plotOutput('plot2', width = '400px', height = '400px')
+#    ),
+#    options = list(classes = list(`ui-selected` = 'ui-state-highlight'))
 #  )
 
 ## ---- eval = FALSE------------------------------------------------------------
-#  server <- function(input, output) {
-#    jqui_draggable("#sel,#chbox,#plot")
-#  }
+#  # change opacity while sorting
+#  jqui_sortable('#foo', options = list(opacity = 0.5))
+#  
+#  # only items with class "items" inside the element become sortable
+#  jqui_sortable('#foo', options = list(items = '> .items'))
+#  
+#  # connect two sortable elements, so that items in one element can be dragged to another
+#  jqui_sortable('#foo1', options = list(connectWith = '#foo2'))
+#  jqui_sortable('#foo2', options = list(connectWith = '#foo1'))
+#  
 
 ## ---- echo=FALSE--------------------------------------------------------------
 draggable_shiny <- data.frame(
@@ -129,59 +185,6 @@ knitr::kable(rbind(draggable_shiny, droppable_shiny, resizable_shiny,
 #      )
 #    )
 #  ))
-
-## ---- eval = FALSE------------------------------------------------------------
-#  # drag only horizontally
-#  jqui_draggable('#foo', options = list(axis = 'x'))
-#  # make movement snapping to a 80 x 80 grid
-#  jqui_draggable('#foo', options = list(grid = c(80, 80)))
-
-## ---- eval = FALSE------------------------------------------------------------
-#  jqui_droppable('#foo', options = list(
-#    accept = '#bar', # jQuery selector to define which draggable element to monitor. Accept anything if not set.
-#    classes = list(
-#      `ui-droppable-active` = 'ui-state-focus', # change class when draggable element is dragging
-#      `ui-droppable-hover` = 'ui-state-highlight' # change class when draggable element is dragging over
-#    ),
-#    drop = JS(
-#      'function(event, ui){$(this).addClass("ui-state-active");}'
-#    ) # a javascrip callback to change class when draggable element is dropped in
-#  ))
-
-## ---- eval = FALSE------------------------------------------------------------
-#  # keep aspect ratio when resizing
-#  jqui_resizable('#foo', options = list(aspectRatio = TRUE))
-#  
-#  # Limit the resizable element to a maximum or minimum height or width
-#  jqui_resizable('#foo', options = list(minHeight = 100, maxHeight = 300,
-#                                        minWidth = 200, maxWidth = 400))
-#  
-#  # make the two plotOutputs resize synchronously
-#  jqui_resizable(plotOutput('plot1', width = '400px', height = '400px'),
-#                    options = list(alsoResize = '#plot2')),
-#  plotOutput('plot2', width = '400px', height = '400px')
-
-## ---- eval = FALSE------------------------------------------------------------
-#  # highlight the selected plotOutput
-#  jqui_selectable(
-#    div(
-#      plotOutput('plot1', width = '400px', height = '400px'),
-#      plotOutput('plot2', width = '400px', height = '400px')
-#    ),
-#    options = list(classes = list(`ui-selected` = 'ui-state-highlight'))
-#  )
-
-## ---- eval = FALSE------------------------------------------------------------
-#  # change opacity while sorting
-#  jqui_sortable('#foo', options = list(opacity = 0.5))
-#  
-#  # only items with class "items" inside the element become sortable
-#  jqui_sortable('#foo', options = list(items = '> .items'))
-#  
-#  # connect two sortable elements, so that items in one element can be dragged to another
-#  jqui_sortable('#foo1', options = list(connectWith = '#foo2'))
-#  jqui_sortable('#foo2', options = list(connectWith = '#foo1'))
-#  
 
 ## ---- echo=FALSE--------------------------------------------------------------
 get_jqui_effects()

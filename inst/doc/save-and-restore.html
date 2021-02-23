@@ -12,17 +12,42 @@
 
 <meta name="author" content="Yang Tang" />
 
-<meta name="date" content="2020-02-03" />
+<meta name="date" content="2021-02-23" />
 
 <title>Save and restore</title>
 
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -32,14 +57,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -48,9 +75,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -104,6 +131,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 })();
 </script>
+
 
 
 
@@ -301,14 +329,14 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Save and restore</h1>
 <h4 class="author">Yang Tang</h4>
-<h4 class="date">2020-02-03</h4>
+<h4 class="date">2021-02-23</h4>
 
 
 
-<p>This vignette introduce the save and restore feature of mouse-interactions in <code>shinyjqui</code> package.</p>
+<p>This vignette introduce the save and restore feature of the mouse-interaction functions.</p>
 <div id="what-can-be-save-and-restored" class="section level2">
 <h2>What can be save and restored?</h2>
-<p>The mouse interactions provide ways to manipulate the state of shiny html elements (listed below) through clicking or dragging.</p>
+<p>The current state of a mouse-interaction enabled shiny ui element can be captured and loaded. See this table:</p>
 <table>
 <thead>
 <tr class="header">
@@ -335,71 +363,106 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </tr>
 </tbody>
 </table>
-<p>These interaction states can be saved and restored in the following two ways.</p>
 </div>
 <div id="save-and-restore-within-a-shiny-session-client-side" class="section level2">
 <h2>Save and restore within a shiny session (client-side)</h2>
-<p>This is the case when users want to temporarily save the current interaction state (e.g., position of element) and restore it after mouse operations without closing the shiny app or reloading the page. The <code>save</code> and <code>load</code> operations from the corresponding interaction functions can serve the purpose:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">ui &lt;-<span class="st"> </span><span class="kw">fluidPage</span>(</a>
-<a class="sourceLine" id="cb1-2" title="2">  <span class="kw">actionButton</span>(<span class="st">&quot;save&quot;</span>, <span class="st">&quot;Save position&quot;</span>),</a>
-<a class="sourceLine" id="cb1-3" title="3">  <span class="kw">actionButton</span>(<span class="st">&quot;restore&quot;</span>, <span class="st">&quot;Restore position&quot;</span>),</a>
-<a class="sourceLine" id="cb1-4" title="4">  <span class="co"># create a draggable textInput</span></a>
-<a class="sourceLine" id="cb1-5" title="5">  <span class="kw">jqui_draggable</span>(<span class="kw">textInput</span>(<span class="st">&quot;foo&quot;</span>, <span class="st">&quot;Textinput&quot;</span>))</a>
-<a class="sourceLine" id="cb1-6" title="6">)</a>
-<a class="sourceLine" id="cb1-7" title="7"></a>
-<a class="sourceLine" id="cb1-8" title="8">server &lt;-<span class="st"> </span><span class="cf">function</span>(input, output) {</a>
-<a class="sourceLine" id="cb1-9" title="9">  <span class="co"># on save button clicked, save the current postion of the textInput</span></a>
-<a class="sourceLine" id="cb1-10" title="10">  <span class="kw">observeEvent</span>(input<span class="op">$</span>save, {</a>
-<a class="sourceLine" id="cb1-11" title="11">    <span class="kw">jqui_draggable</span>(<span class="st">&quot;#foo&quot;</span>, <span class="dt">operation =</span> <span class="st">&quot;save&quot;</span>)</a>
-<a class="sourceLine" id="cb1-12" title="12">  })</a>
-<a class="sourceLine" id="cb1-13" title="13">  <span class="co"># on restore button clicked, move the textInput back to the last saved position</span></a>
-<a class="sourceLine" id="cb1-14" title="14">  <span class="kw">observeEvent</span>(input<span class="op">$</span>restore, {</a>
-<a class="sourceLine" id="cb1-15" title="15">    <span class="kw">jqui_draggable</span>(<span class="st">&quot;#foo&quot;</span>, <span class="dt">operation =</span> <span class="st">&quot;load&quot;</span>)</a>
-<a class="sourceLine" id="cb1-16" title="16">  })</a>
-<a class="sourceLine" id="cb1-17" title="17">}</a>
-<a class="sourceLine" id="cb1-18" title="18"></a>
-<a class="sourceLine" id="cb1-19" title="19"><span class="kw">shinyApp</span>(ui, server)</a></code></pre></div>
+<p>This is the case when users want to temporarily save the current interaction state (e.g., position of element) and restore it later in the same shiny session (without closing the app or reloading the page). The <code>save</code> and <code>load</code> operations from the corresponding interaction functions can serve the purpose:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>ui &lt;-<span class="st"> </span><span class="kw">fluidPage</span>(</span>
+<span id="cb1-2"><a href="#cb1-2"></a>  <span class="kw">actionButton</span>(<span class="st">&quot;save&quot;</span>, <span class="st">&quot;Save position&quot;</span>),</span>
+<span id="cb1-3"><a href="#cb1-3"></a>  <span class="kw">actionButton</span>(<span class="st">&quot;restore&quot;</span>, <span class="st">&quot;Restore position&quot;</span>),</span>
+<span id="cb1-4"><a href="#cb1-4"></a>  <span class="co"># create a draggable textInput</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>  <span class="kw">jqui_draggable</span>(<span class="kw">textInput</span>(<span class="st">&quot;foo&quot;</span>, <span class="st">&quot;Textinput&quot;</span>))</span>
+<span id="cb1-6"><a href="#cb1-6"></a>)</span>
+<span id="cb1-7"><a href="#cb1-7"></a></span>
+<span id="cb1-8"><a href="#cb1-8"></a>server &lt;-<span class="st"> </span><span class="cf">function</span>(input, output) {</span>
+<span id="cb1-9"><a href="#cb1-9"></a>  <span class="co"># on save button clicked, save the current position of the textInput</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a>  <span class="kw">observeEvent</span>(input<span class="op">$</span>save, {</span>
+<span id="cb1-11"><a href="#cb1-11"></a>    <span class="kw">jqui_draggable</span>(<span class="st">&quot;#foo&quot;</span>, <span class="dt">operation =</span> <span class="st">&quot;save&quot;</span>)</span>
+<span id="cb1-12"><a href="#cb1-12"></a>  })</span>
+<span id="cb1-13"><a href="#cb1-13"></a>  <span class="co"># on restore button clicked, move the textInput back to the last saved position</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a>  <span class="kw">observeEvent</span>(input<span class="op">$</span>restore, {</span>
+<span id="cb1-15"><a href="#cb1-15"></a>    <span class="kw">jqui_draggable</span>(<span class="st">&quot;#foo&quot;</span>, <span class="dt">operation =</span> <span class="st">&quot;load&quot;</span>)</span>
+<span id="cb1-16"><a href="#cb1-16"></a>  })</span>
+<span id="cb1-17"><a href="#cb1-17"></a>}</span>
+<span id="cb1-18"><a href="#cb1-18"></a></span>
+<span id="cb1-19"><a href="#cb1-19"></a><span class="kw">shinyApp</span>(ui, server)</span></code></pre></div>
 <p>This method also applies to interaction shortcuts like <code>orderInput()</code>, <code>selectableTableOutput()</code> and <code>sortableTabsetPanel()</code>. For example,</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">ui &lt;-<span class="st"> </span><span class="kw">fluidPage</span>(</a>
-<a class="sourceLine" id="cb2-2" title="2">  <span class="kw">actionButton</span>(<span class="st">&quot;save&quot;</span>, <span class="st">&quot;Save order&quot;</span>),</a>
-<a class="sourceLine" id="cb2-3" title="3">  <span class="kw">actionButton</span>(<span class="st">&quot;restore&quot;</span>, <span class="st">&quot;Restore order&quot;</span>),</a>
-<a class="sourceLine" id="cb2-4" title="4">  <span class="kw">orderInput</span>(<span class="st">&quot;foo1&quot;</span>, <span class="dt">label =</span> <span class="ot">NULL</span>, <span class="dt">items =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">connect =</span> <span class="st">&quot;foo2&quot;</span>),</a>
-<a class="sourceLine" id="cb2-5" title="5">  <span class="kw">orderInput</span>(<span class="st">&quot;foo2&quot;</span>, <span class="dt">label =</span> <span class="ot">NULL</span>, <span class="dt">items =</span> <span class="ot">NULL</span>, <span class="dt">placeholder =</span> <span class="st">&quot;empty&quot;</span>)</a>
-<a class="sourceLine" id="cb2-6" title="6">)</a>
-<a class="sourceLine" id="cb2-7" title="7"></a>
-<a class="sourceLine" id="cb2-8" title="8">server &lt;-<span class="st"> </span><span class="cf">function</span>(input, output) {</a>
-<a class="sourceLine" id="cb2-9" title="9">  <span class="kw">observeEvent</span>(input<span class="op">$</span>save, {</a>
-<a class="sourceLine" id="cb2-10" title="10">    <span class="kw">jqui_sortable</span>(<span class="st">&quot;#foo1,#foo2&quot;</span>, <span class="dt">operation =</span> <span class="st">&quot;save&quot;</span>)</a>
-<a class="sourceLine" id="cb2-11" title="11">  })</a>
-<a class="sourceLine" id="cb2-12" title="12">  <span class="kw">observeEvent</span>(input<span class="op">$</span>restore, {</a>
-<a class="sourceLine" id="cb2-13" title="13">    <span class="kw">jqui_sortable</span>(<span class="st">&quot;#foo1,#foo2&quot;</span>, <span class="dt">operation =</span> <span class="st">&quot;load&quot;</span>)</a>
-<a class="sourceLine" id="cb2-14" title="14">  })</a>
-<a class="sourceLine" id="cb2-15" title="15">}</a>
-<a class="sourceLine" id="cb2-16" title="16"></a>
-<a class="sourceLine" id="cb2-17" title="17"><span class="kw">shinyApp</span>(ui, server)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>ui &lt;-<span class="st"> </span><span class="kw">fluidPage</span>(</span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="kw">actionButton</span>(<span class="st">&quot;save&quot;</span>, <span class="st">&quot;Save order&quot;</span>),</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="kw">actionButton</span>(<span class="st">&quot;restore&quot;</span>, <span class="st">&quot;Restore order&quot;</span>),</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="kw">orderInput</span>(<span class="st">&quot;foo1&quot;</span>, <span class="dt">label =</span> <span class="ot">NULL</span>, <span class="dt">items =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">connect =</span> <span class="st">&quot;foo2&quot;</span>),</span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="kw">orderInput</span>(<span class="st">&quot;foo2&quot;</span>, <span class="dt">label =</span> <span class="ot">NULL</span>, <span class="dt">items =</span> <span class="ot">NULL</span>, <span class="dt">placeholder =</span> <span class="st">&quot;empty&quot;</span>)</span>
+<span id="cb2-6"><a href="#cb2-6"></a>)</span>
+<span id="cb2-7"><a href="#cb2-7"></a></span>
+<span id="cb2-8"><a href="#cb2-8"></a>server &lt;-<span class="st"> </span><span class="cf">function</span>(input, output) {</span>
+<span id="cb2-9"><a href="#cb2-9"></a>  <span class="kw">observeEvent</span>(input<span class="op">$</span>save, {</span>
+<span id="cb2-10"><a href="#cb2-10"></a>    <span class="kw">jqui_sortable</span>(<span class="st">&quot;#foo1,#foo2&quot;</span>, <span class="dt">operation =</span> <span class="st">&quot;save&quot;</span>)</span>
+<span id="cb2-11"><a href="#cb2-11"></a>  })</span>
+<span id="cb2-12"><a href="#cb2-12"></a>  <span class="kw">observeEvent</span>(input<span class="op">$</span>restore, {</span>
+<span id="cb2-13"><a href="#cb2-13"></a>    <span class="kw">jqui_sortable</span>(<span class="st">&quot;#foo1,#foo2&quot;</span>, <span class="dt">operation =</span> <span class="st">&quot;load&quot;</span>)</span>
+<span id="cb2-14"><a href="#cb2-14"></a>  })</span>
+<span id="cb2-15"><a href="#cb2-15"></a>}</span>
+<span id="cb2-16"><a href="#cb2-16"></a></span>
+<span id="cb2-17"><a href="#cb2-17"></a><span class="kw">shinyApp</span>(ui, server)</span></code></pre></div>
+<p>The <code>load</code> operation also supports user-defined-state if a <code>state</code> exists in <code>options</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>ui &lt;-<span class="st"> </span><span class="kw">fluidPage</span>(</span>
+<span id="cb3-2"><a href="#cb3-2"></a>  <span class="kw">actionButton</span>(<span class="st">&quot;s&quot;</span>, <span class="st">&quot;Small&quot;</span>),</span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="kw">actionButton</span>(<span class="st">&quot;m&quot;</span>, <span class="st">&quot;Medium&quot;</span>),</span>
+<span id="cb3-4"><a href="#cb3-4"></a>  <span class="kw">actionButton</span>(<span class="st">&quot;l&quot;</span>, <span class="st">&quot;Large&quot;</span>),</span>
+<span id="cb3-5"><a href="#cb3-5"></a>  <span class="kw">jqui_resizable</span>(<span class="kw">plotOutput</span>(<span class="st">&#39;gg&#39;</span>, <span class="dt">width =</span> <span class="st">&#39;200px&#39;</span>, <span class="dt">height =</span> <span class="st">&#39;200px&#39;</span>))</span>
+<span id="cb3-6"><a href="#cb3-6"></a>)</span>
+<span id="cb3-7"><a href="#cb3-7"></a></span>
+<span id="cb3-8"><a href="#cb3-8"></a>server &lt;-<span class="st"> </span><span class="cf">function</span>(input, output) {</span>
+<span id="cb3-9"><a href="#cb3-9"></a>  output<span class="op">$</span>gg &lt;-<span class="st"> </span><span class="kw">renderPlot</span>({</span>
+<span id="cb3-10"><a href="#cb3-10"></a>    <span class="kw">ggplot</span>(mtcars, <span class="kw">aes</span>(<span class="dt">x =</span> cyl, <span class="dt">y =</span> mpg)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>()</span>
+<span id="cb3-11"><a href="#cb3-11"></a>  })</span>
+<span id="cb3-12"><a href="#cb3-12"></a>  <span class="kw">observeEvent</span>(input<span class="op">$</span>s, </span>
+<span id="cb3-13"><a href="#cb3-13"></a>               <span class="kw">jqui_resizable</span>(</span>
+<span id="cb3-14"><a href="#cb3-14"></a>                 <span class="dt">ui        =</span> <span class="st">&quot;#gg&quot;</span>, </span>
+<span id="cb3-15"><a href="#cb3-15"></a>                 <span class="dt">operation =</span> <span class="st">&quot;load&quot;</span>, </span>
+<span id="cb3-16"><a href="#cb3-16"></a>                 <span class="dt">options   =</span> <span class="kw">list</span>(<span class="dt">state =</span> <span class="kw">list</span>(<span class="dt">width  =</span> <span class="dv">100</span>, <span class="dt">height =</span> <span class="dv">100</span>))</span>
+<span id="cb3-17"><a href="#cb3-17"></a>               )</span>
+<span id="cb3-18"><a href="#cb3-18"></a>  )</span>
+<span id="cb3-19"><a href="#cb3-19"></a>  <span class="kw">observeEvent</span>(input<span class="op">$</span>m, </span>
+<span id="cb3-20"><a href="#cb3-20"></a>               <span class="kw">jqui_resizable</span>(</span>
+<span id="cb3-21"><a href="#cb3-21"></a>                 <span class="dt">ui        =</span> <span class="st">&quot;#gg&quot;</span>, </span>
+<span id="cb3-22"><a href="#cb3-22"></a>                 <span class="dt">operation =</span> <span class="st">&quot;load&quot;</span>, </span>
+<span id="cb3-23"><a href="#cb3-23"></a>                 <span class="dt">options   =</span> <span class="kw">list</span>(<span class="dt">state =</span> <span class="kw">list</span>(<span class="dt">width  =</span> <span class="dv">200</span>, <span class="dt">height =</span> <span class="dv">200</span>))</span>
+<span id="cb3-24"><a href="#cb3-24"></a>               )</span>
+<span id="cb3-25"><a href="#cb3-25"></a>  )</span>
+<span id="cb3-26"><a href="#cb3-26"></a>  <span class="kw">observeEvent</span>(input<span class="op">$</span>l, </span>
+<span id="cb3-27"><a href="#cb3-27"></a>               <span class="kw">jqui_resizable</span>(</span>
+<span id="cb3-28"><a href="#cb3-28"></a>                 <span class="dt">ui        =</span> <span class="st">&quot;#gg&quot;</span>, </span>
+<span id="cb3-29"><a href="#cb3-29"></a>                 <span class="dt">operation =</span> <span class="st">&quot;load&quot;</span>, </span>
+<span id="cb3-30"><a href="#cb3-30"></a>                 <span class="dt">options   =</span> <span class="kw">list</span>(<span class="dt">state =</span> <span class="kw">list</span>(<span class="dt">width  =</span> <span class="dv">400</span>, <span class="dt">height =</span> <span class="dv">400</span>))</span>
+<span id="cb3-31"><a href="#cb3-31"></a>               )</span>
+<span id="cb3-32"><a href="#cb3-32"></a>  )</span>
+<span id="cb3-33"><a href="#cb3-33"></a>}</span>
+<span id="cb3-34"><a href="#cb3-34"></a></span>
+<span id="cb3-35"><a href="#cb3-35"></a><span class="kw">shinyApp</span>(ui, server)</span></code></pre></div>
 </div>
 <div id="save-and-restore-cross-shiny-sessions-shiny-bookmarking" class="section level2">
 <h2>Save and restore cross shiny sessions (shiny bookmarking)</h2>
-<p>In addition to the client-side mode, cross-session save/restore is also supported, which takes advantage of <a href="https://shiny.rstudio.com/articles/bookmarking-state.html">shiny bookmarking</a>. In this case, users can save the interaction state alone with other shiny input values either by URL-encoding or by save-to-server, and restore them in a different shiny session. All the operations are the same as the native shiny bookmarking except adding a <code>jqui_bookmarking()</code> call in server like this:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"></a>
-<a class="sourceLine" id="cb3-2" title="2">ui &lt;-<span class="st"> </span><span class="cf">function</span>(request) {</a>
-<a class="sourceLine" id="cb3-3" title="3">  <span class="kw">fluidPage</span>(</a>
-<a class="sourceLine" id="cb3-4" title="4">    <span class="kw">bookmarkButton</span>(),</a>
-<a class="sourceLine" id="cb3-5" title="5">    <span class="kw">jqui_resizable</span>(<span class="kw">plotOutput</span>(<span class="st">&#39;gg&#39;</span>, <span class="dt">width =</span> <span class="st">&#39;200px&#39;</span>, <span class="dt">height =</span> <span class="st">&#39;200px&#39;</span>))</a>
-<a class="sourceLine" id="cb3-6" title="6">  )</a>
-<a class="sourceLine" id="cb3-7" title="7">}</a>
-<a class="sourceLine" id="cb3-8" title="8"></a>
-<a class="sourceLine" id="cb3-9" title="9">server &lt;-<span class="st"> </span><span class="cf">function</span>(input, output) {</a>
-<a class="sourceLine" id="cb3-10" title="10">  output<span class="op">$</span>gg &lt;-<span class="st"> </span><span class="kw">renderPlot</span>({</a>
-<a class="sourceLine" id="cb3-11" title="11">    <span class="kw">ggplot</span>(mtcars, <span class="kw">aes</span>(<span class="dt">x =</span> cyl, <span class="dt">y =</span> mpg)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>()</a>
-<a class="sourceLine" id="cb3-12" title="12">  })</a>
-<a class="sourceLine" id="cb3-13" title="13">  <span class="co"># enable interaction state bookmarking</span></a>
-<a class="sourceLine" id="cb3-14" title="14">  <span class="kw">jqui_bookmarking</span>()</a>
-<a class="sourceLine" id="cb3-15" title="15">}</a>
-<a class="sourceLine" id="cb3-16" title="16"></a>
-<a class="sourceLine" id="cb3-17" title="17"><span class="kw">enableBookmarking</span>(<span class="dt">store =</span> <span class="st">&quot;url&quot;</span>)</a>
-<a class="sourceLine" id="cb3-18" title="18"></a>
-<a class="sourceLine" id="cb3-19" title="19"><span class="kw">shinyApp</span>(ui, server)</a></code></pre></div>
+<p>In addition to the client-side mode, cross-session save/restore is also supported, which takes advantage of <a href="https://shiny.rstudio.com/articles/bookmarking-state.html">shiny bookmarking</a>. In this case, users can save the interaction state alone with other shiny input values either by URL-encoding or by save-to-server, and restore them in another shiny session. The only thing needs to do is to include a <code>jqui_bookmarking()</code> call in server function. All the other operations are the same as the native shiny bookmarking:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2"></a>ui &lt;-<span class="st"> </span><span class="cf">function</span>(request) {</span>
+<span id="cb4-3"><a href="#cb4-3"></a>  <span class="kw">fluidPage</span>(</span>
+<span id="cb4-4"><a href="#cb4-4"></a>    <span class="kw">bookmarkButton</span>(),</span>
+<span id="cb4-5"><a href="#cb4-5"></a>    <span class="kw">jqui_resizable</span>(<span class="kw">plotOutput</span>(<span class="st">&#39;gg&#39;</span>, <span class="dt">width =</span> <span class="st">&#39;200px&#39;</span>, <span class="dt">height =</span> <span class="st">&#39;200px&#39;</span>))</span>
+<span id="cb4-6"><a href="#cb4-6"></a>  )</span>
+<span id="cb4-7"><a href="#cb4-7"></a>}</span>
+<span id="cb4-8"><a href="#cb4-8"></a></span>
+<span id="cb4-9"><a href="#cb4-9"></a>server &lt;-<span class="st"> </span><span class="cf">function</span>(input, output) {</span>
+<span id="cb4-10"><a href="#cb4-10"></a>  output<span class="op">$</span>gg &lt;-<span class="st"> </span><span class="kw">renderPlot</span>({</span>
+<span id="cb4-11"><a href="#cb4-11"></a>    <span class="kw">ggplot</span>(mtcars, <span class="kw">aes</span>(<span class="dt">x =</span> cyl, <span class="dt">y =</span> mpg)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>()</span>
+<span id="cb4-12"><a href="#cb4-12"></a>  })</span>
+<span id="cb4-13"><a href="#cb4-13"></a>  <span class="co"># enable interaction state bookmarking</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a>  <span class="kw">jqui_bookmarking</span>()</span>
+<span id="cb4-15"><a href="#cb4-15"></a>}</span>
+<span id="cb4-16"><a href="#cb4-16"></a></span>
+<span id="cb4-17"><a href="#cb4-17"></a><span class="kw">enableBookmarking</span>(<span class="dt">store =</span> <span class="st">&quot;url&quot;</span>)</span>
+<span id="cb4-18"><a href="#cb4-18"></a></span>
+<span id="cb4-19"><a href="#cb4-19"></a><span class="kw">shinyApp</span>(ui, server)</span></code></pre></div>
 </div>
 
 

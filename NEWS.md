@@ -1,10 +1,29 @@
+## shinyjqui 0.4.0
+
+* __New feature:__ (Experimentally) Now the interaction functions can work on static htmlwidgets in RStudio Viewer or RMarkdown (e.g. `jqui_resizable(plotly::plot_ly(data = iris, x = ~Sepal.Length, y = ~Petal.Length))`). (#44)
+* __New feature:__ Now `orderInput()` can be updated with `updateOrderInput()`. (#41, #57)
+* __New feature:__ Items of an `orderInput()` can now be deleted by drag and drop them to an "source" `orderInput()`. (Idea from [raytong](https://community.rstudio.com/t/customizing-shinyjqui-package/48140/4) #65)
+* __New feature:__ New `jqui_position()` function to position a shiny ui relative to another.
+* __New feature:__ Uses [TouchPunch](https://github.com/furf/jquery-ui-touch-punch) to enable mobile use. (Thanks @rquitales, #45)
+* __Breaking change:__ The `orderInput` function is now implemented in the similar way as other shiny inputs, so its input value has been changed from `input$inputId_order` to `input$inputId`.
+* __Breaking change:__ Removed `jqui_draggabled()`, `jqui_droppabled()`, `jqui_resizabled()`, `jqui_selectabled()`, `jqui_sortabled()` and `includeJqueryUI()` as they have been deprecated for a long time.
+* __Breaking change:__ Removed deprecated `selector`, `tag` and `switch` parameters from interaction and effect functions.
+* __Bug fix:__ Effect-specific options are no longer ignored by `jqui_effect()`. (#56)
+* __Bug fix:__ `input$id_order` of sortable now return values when the `connectToSortable` option is used.
+* __Bug fix:__ Nested interaction functions was not working with a shiny tag without an id (e.g. `jqui_resizable(jqui_draggable(div("aaa")))`). (#66)
+* __Bug fix:__ Nested interaction functions showed "Action abort" warning to a shiny tag without an id. (#66)
+* __Bug fix:__ When using `load` operation to a sortable element or `orderInput`, the items from other "source" `orderInput`s were not removed. (#70)
+* __Bug fix:__ Enable `NULL` label in `orderInput()`. (#63)
+* __Bug fix:__ A regression bug introduced in v0.3.3 that interactive tag is not effective when inserted by `insertUI`. (#58)
+
+
 ## shinyjqui 0.3.3
 
 * __Bug fix:__ Fixed an incompatibility with Shiny v1.4.0: due to Shiny upgrading from jQuery 1.x to 3.x, the timing of shinjqui initialization routines has changed.
-* __Bug fix:__ `sortableRadioButtons`/`sortableCheckboxGroupInput` do not work when inlined. (@sam-harvey, #37).
+* __Bug fix:__ `sortableRadioButtons`/`sortableCheckboxGroupInput` do not work when inline. (@sam-harvey, #37).
 * __Bug fix:__ For interaction functions, the `shiny` options with the same suffix will overwrite the default settings, thus affect the return value of other interaction widgets. (#43)
 * __Bug fix:__ Interaction functions not working in `ui` mode in flexdashboard. (#53)
-* Add global option `shinyjqui.debug`, can be `TURE` or `FALSE`(default), to control whether to load the original/minified `shinyjqui.js` (#39) and to display/hide javascript debug message (#3).
+* Add global option `shinyjqui.debug`, can be `TURE` or `FALSE`(default), to control whether to load the original/minified `shinyjqui.js` (#39) and to display/hide javascript debug message (e.g. `options(shinyjqui.debug = TRUE)`) (#3).
 
 
 ## shinyjqui 0.3.2

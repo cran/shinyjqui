@@ -1,10 +1,16 @@
+## ---- include = FALSE---------------------------------------------------------
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
 ## ---- include=FALSE-----------------------------------------------------------
 library(shiny)
 library(shinyjqui)
 
 ## ---- eval=FALSE--------------------------------------------------------------
 #  server <- function(input, output) {
-#    output$order <- renderPrint({input$foo_order})
+#    output$order <- renderPrint({input$foo})
 #  }
 #  
 #  ui <- fluidPage(
@@ -24,6 +30,25 @@ library(shinyjqui)
 #  # In source mode, items dragged to B are copied
 #  orderInput('A', 'A', items = 1:3, connect = 'B', as_source = TRUE)
 #  orderInput('B', 'B', items = 4:6)
+
+## ---- eval=FALSE--------------------------------------------------------------
+#  # Anything dropped into a "source" orderInput will be deleted
+#  orderInput('A', 'A', items = 1:3, as_source = TRUE),
+#  orderInput('B', 'B', items = 4:6)
+
+## ---- eval=FALSE--------------------------------------------------------------
+#  ui <- fluidPage(
+#    orderInput('A', 'A', items = 1:3, as_source = TRUE, connect = c("B", "C")),
+#    orderInput('B', 'B', items = 4:6, connect = "C"),
+#    orderInput('C', 'C', items = 7:9, connect = "B"),
+#    hr(),
+#    actionButton("save", "Save"),
+#    actionButton("load", "Load")
+#  )
+#  server <- function(input, output, session) {
+#    observeEvent(input$save, jqui_sortable("#B,#C", "save"))
+#    observeEvent(input$load, jqui_sortable("#B,#C", "load"))
+#  }
 
 ## ---- eval=FALSE--------------------------------------------------------------
 #  orderInput('A', 'A', items = 1:3, connect = 'B')
