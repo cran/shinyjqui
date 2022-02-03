@@ -35,6 +35,12 @@ shinyjqui = function() {
       var input_name = id + '_' + suffix;
       $.each(callbacks, function(event_type, func){
         $(el).on(event_type, function(event, ui){
+          // only react on element with "shinyjqui" class but not others that
+          // could trigger jquery ui events as well
+          if(!$(event.target).hasClass("shinyjqui")) {return;}
+          // when the resizing is about to stop, the last resize event has an
+          // undefined ui???, should skip the operation.
+          if(event.type == "resize" && typeof(ui) == "undefined") {return;}
           var input_value = func(event, ui);
           Shiny.onInputChange(input_name, input_value);
         });
@@ -109,6 +115,9 @@ shinyjqui = function() {
       e = getInputContainer(e);
       e = addWrapper(e);
       e = getWrapper(e);
+      // add a shinyjqui class to the target element to distinguish it from
+      // other non-shinyjqui elements that could also trigger jquery ui events
+      e.classList.add("shinyjqui");
       return e;
     });
 
@@ -434,7 +443,14 @@ shinyjqui = function() {
           }
         },
         size : {
-          "resizecreate resize resizestop" : function(event, ui) {
+          "resize resizestop" : function(event, ui) {
+            return {
+                width : ui.size.width,
+                height : ui.size.height
+            };
+          },
+          "resizecreate" : function(event, ui) {
+            // no ui.size defined
             return {
               width : $(event.target).width(),
               height : $(event.target).height()
@@ -642,7 +658,13 @@ shinyjqui = function() {
             // The attr `jqui_sortable_idx` was added by function `addIndex` for
             // bookmarking.
             //var $items = $(event.target).find('.ui-sortable-handle');
-            var $items = $(event.target).find('[jqui_sortable_idx]');
+            //var $items = $(event.target).find('[jqui_sortable_idx]');
+
+            // (Update) Using items_selector is a simpler way to find the items
+            // When items were insterted by insertUI, they don't have arrt
+            // `jqui_sortable_idx`
+            var items_selector = $(event.target).sortable( "option", "items" );
+            var $items = $(event.target).find(items_selector);
             var text = $items.map(function(i, e){
               // use empty string for `undefined` to keep the same length as ids
               return e.innerText ? e.innerText : ""
@@ -685,6 +707,7 @@ shinyjqui = function() {
       removeJquiData(el);
       removeWrapper(el);
       removeIndex(el);
+      $el.removeClass("shinyjqui")
     },
 
     save : function(el, interaction, opt) {
@@ -742,18 +765,18 @@ shinyjqui = function() {
           .attr('id');
       }
 
-      // for shiny output
-      if(!id) {
-        id = $(el)
-          .closest('.shiny-bound-output')
-          .attr('id');
-      }
-
       // for shiny output that is wrapped with a resizable div
       if(!id) {
         id = $(el)
           .closest('.jqui-wrapper')
           .find('.shiny-bound-output')
+          .attr('id');
+      }
+
+      // for other shiny outputs
+      if(!id) {
+        id = $(el)
+          .closest('.shiny-bound-output')
           .attr('id');
       }
 

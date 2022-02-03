@@ -4,10 +4,19 @@ digestItems <- function(items) {
     item_values <- list()
     item_labels <- list()
   } else if(is.vector(items)) {
-    item_values <- unlist(items, recursive = FALSE, use.names = TRUE)
-    nms <- names(item_values)
-    item_labels <- `if`(is.null(nms) || any(nms == "") || any(is.na(nms)),
-                        item_values, nms)
+    # item_values <- unlist(items, recursive = FALSE, use.names = TRUE)
+    # nms <- names(item_values)
+    # item_values <- unname(item_values)
+    # item_labels <- `if`(is.null(nms) || any(nms == "") || any(is.na(nms)),
+                        # item_values, nms)
+
+    items <- unlist(items, recursive = FALSE, use.names = TRUE)
+    # jsonlite doesn't support named vector any more
+    item_values <- unname(items)
+    # use names2() to handle NA or Null
+    item_labels <- rlang::names2(items)
+    item_labels[item_labels == ""] <- item_values[item_labels == ""]
+
   } else if (is.factor(items)) {
     item_values <- as.numeric(items)
     item_labels <- as.character(items)
@@ -74,9 +83,9 @@ orderInputSource <- function(x) {
 #' `orderInput`s can work in either connected mode or stand-alone mode. In
 #' stand-alone mode, items can only be drag and drop inside the input control.
 #' In connected mode, items to be dragged between `orderInput`s, which is
-#' controlled by the `connect` parameter. This is a one-way relationship. if
-#' user want the items to be connected in both directions, the `connect`
-#' parameter must be set on both `orderInput`s.
+#' controlled by the `connect` parameter. This is a one-way relationship. To
+#' connect items in both directions, the `connect` parameter must be set in both
+#' `orderInput`s.
 #'
 #' When in connected mode, `orderInput` can be set as source-only through the
 #' `as_source` parameter. The items in a "source" `orderInput` can only be

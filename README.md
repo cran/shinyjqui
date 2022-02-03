@@ -5,17 +5,17 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/Yang-Tang/shinyjqui/workflows/R-CMD-check/badge.svg)](https://github.com/Yang-Tang/shinyjqui/actions)[![Travis-CI
-Build
+[![R-CMD-check](https://github.com/Yang-Tang/shinyjqui/workflows/R-CMD-check/badge.svg)](https://github.com/Yang-Tang/shinyjqui/actions)
+[![Travis-CI Build
 Status](https://travis-ci.org/Yang-Tang/shinyjqui.svg?branch=master)](https://travis-ci.org/Yang-Tang/shinyjqui)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/Yang-Tang/shinyjqui?branch=master&svg=true)](https://ci.appveyor.com/project/Yang-Tang/shinyjqui)
-[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/shinyjqui)](https://cran.r-project.org/package=shinyjqui)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/shinyjqui)](https://cran.r-project.org/package=shinyjqui)
 <!-- badges: end -->
 
-The shinyjqui package is an R wrapper for [jQuery
-UI](https://jqueryui.com/) javascript library. It allows user to easily
-add interactions and animation effects to a shiny app.
+shinyjqui package is an R wrapper of [jQuery UI](https://jqueryui.com/)
+javascript library. It can be used to easily add interactions and
+animation effects to a shiny app.
 
 ## Installation
 
@@ -40,9 +40,7 @@ library(ggplot2)
 library(highcharter)
 ```
 
-  - **Draggable:** Allow elements to be moved using the mouse
-
-<!-- end list -->
+-   **Draggable:** Allow elements to be moved using the mouse
 
 ``` r
 server <- function(input, output) {}
@@ -54,11 +52,9 @@ ui <- fluidPage(
 shinyApp(ui, server)
 ```
 
-![](inst/fig/README-draggable.gif)
+![](man/figures/README-draggable.gif)
 
-  - **Resizable:** Change the size of an element using the mouse.
-
-<!-- end list -->
+-   **Resizable:** Change the size of an element using the mouse.
 
 ``` r
 server <- function(input, output) {
@@ -74,11 +70,9 @@ ui <- fluidPage(
 shinyApp(ui, server)
 ```
 
-![](inst/fig/README-resizable.gif)
+![](man/figures/README-resizable.gif)
 
-  - **Sortable:** Reorder elements in a list or grid using the mouse.
-
-<!-- end list -->
+-   **Sortable:** Reorder elements in a list or grid using the mouse.
 
 ``` r
 server <- function(input, output) {
@@ -102,12 +96,10 @@ ui <- fluidPage(
 shinyApp(ui, server)
 ```
 
-![](inst/fig/README-sortable.gif)
+![](man/figures/README-sortable.gif)
 
-  - **Animation Effects:** Apply an animation effect to an element.
+-   **Animation Effects:** Apply an animation effect to an element.
     Effects can also be used in hide or show.
-
-<!-- end list -->
 
 ``` r
 server <- function(input, output) {
@@ -137,12 +129,10 @@ ui <- fluidPage(
 shinyApp(ui, server)
 ```
 
-![](inst/fig/README-effects.gif)
+![](man/figures/README-effects.gif)
 
-  - **Classes transformation:** Add and remove class(es) to elements
+-   **Classes transformation:** Add and remove class(es) to elements
     while animating all style changes.
-
-<!-- end list -->
 
 ``` r
 server <- function(input, output) {
@@ -187,16 +177,14 @@ ui <- fluidPage(
 shinyApp(ui, server)
 ```
 
-![](inst/fig/README-classes.gif)
+![](man/figures/README-classes.gif)
 
-  - **orderInput():** Display a list of items. Their order can be
+-   **orderInput():** Display a list of items. Their order can be
     changed by drag and drop.
-
-<!-- end list -->
 
 ``` r
 server <- function(input, output) {
-  output$order <- renderPrint({ print(input$dest_order) })
+  output$order <- renderPrint({ print(input$dest) })
 }
 
 ui <- fluidPage(
@@ -209,11 +197,9 @@ ui <- fluidPage(
 shinyApp(ui, server)
 ```
 
-![](inst/fig/README-orderInput.gif)
+![](man/figures/README-orderInput.gif)
 
-  - **sortableTableOutput():** Render a HTML table with sortable rows.
-
-<!-- end list -->
+-   **sortableTableOutput():** Render a HTML table with sortable rows.
 
 ``` r
 ui <- fluidPage(
@@ -232,12 +218,10 @@ server <- function(input, output) {
 shinyApp(ui, server)
 ```
 
-![](inst/fig/README-sortableTableOutput.gif)
+![](man/figures/README-sortableTableOutput.gif)
 
-  - **selectableTableOutput():** Render a HTML table with selectable
+-   **selectableTableOutput():** Render a HTML table with selectable
     rows or cells.
-
-<!-- end list -->
 
 ``` r
 ui <- fluidPage(
@@ -256,4 +240,7 @@ server <- function(input, output) {
 shinyApp(ui, server)
 ```
 
-![](inst/fig/README-selectableTableOutput_cell.gif)
+![](man/figures/README-selectableTableOutput_cell.gif)
+
+For more information, please visit the [package
+website](https://yang-tang.github.io/shinyjqui/).

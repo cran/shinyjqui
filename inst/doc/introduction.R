@@ -7,6 +7,7 @@ knitr::opts_chunk$set(
 ## ---- include = FALSE---------------------------------------------------------
 library(shiny)
 library(shinyjqui)
+library(plotly)
 
 ## ---- eval = FALSE------------------------------------------------------------
 #  # create a draggable textInput in shiny ui
@@ -25,19 +26,39 @@ library(shinyjqui)
 #    jqui_draggable(ui = "#foo", operation = "enable")
 #  }
 
-## ---- echo=FALSE--------------------------------------------------------------
-tbl <- data.frame(
-  Mode = c("ui", "server", "server", "non-shiny"),
-  Type = c("A `shiny.tag` or `shiny.tag.list` object",
-           "A string of [jQuery_selector](https://api.jquery.com/category/selectors/)",
-           "A `htmlwidgets::JS()` wrapped javascript expression that returns a [jQuery object](https://api.jquery.com/Types/)",
-           "A static `htmlwidget` object"),
-  Example = c("`tags$p('hello world')`, `textInput('caption', 'Caption', 'Data Summary')`, `plotOutput('myplot')`",
-              "`'#id1,#id2,#id3'`, `'.shiny-plot-output'`, `'div > p'`",
-              "`JS(\"$('#id').children()\")`",
-              "`plot_ly(z = ~volcano, type = \"surface\")`")
-)
-knitr::kable(tbl, escape = T)
+## ---- eval = FALSE------------------------------------------------------------
+#  # shiny input
+#  jqui_draggable(ui = textInput("foo", "Caption", "Data Summary"))
+#  
+#  # shiny output
+#  jqui_resizable(ui = plotOutput("myplot"))
+#  
+#  # HTML list
+#  jqui_sortable(
+#    ui = tags$ul(
+#      tags$li("Coffice"),
+#      tags$li("Tea"),
+#      tags$li("Milk")
+#    )
+#  )
+
+## ---- eval = FALSE------------------------------------------------------------
+#  # target multiple HTML elements by passing a set of ids
+#  jqui_draggable(ui = "#id1,#id2,#id3")
+#  
+#  # target all the shiny `plotOuput`s by passing the class `shiny-plot-output`
+#  jqui_resizable(ui = ".shiny-plot-output")
+#  
+#  # target all <p> elements where the parent is a <div> element
+#  jqui_draggable(ui = "div > p")
+
+## ---- eval = FALSE------------------------------------------------------------
+#  # target all the child elements whose parent has the id `foo`
+#  jqui_draggable(ui = JS("$('#foo').children()"))
+
+## ---- eval = FALSE------------------------------------------------------------
+#  # render a resizable plotly htmlwidget in RStudio Viewer or RMarkdown
+#  jqui_resizable(ui = plot_ly(z = ~volcano, type = "surface"))
 
 ## ---- eval = FALSE------------------------------------------------------------
 #  # drag only horizontally
@@ -95,8 +116,8 @@ knitr::kable(tbl, escape = T)
 ## ---- echo=FALSE--------------------------------------------------------------
 draggable_shiny <- data.frame(
   Interaction_type = 'draggable',
-  suffix = c('position', 'is_dragging'),
-  `The_returned_shiny_input_value` = c(
+  Shiny_input = c('input\\$\\<id\\>_position', 'input\\$\\<id\\>_is_dragging'),
+  `Value_returned` = c(
     'A list of the element\'s left and top distances (in pixels) to its parent element',
     'TRUE or FALSE that indicate whether the element is dragging'
   )
@@ -104,8 +125,8 @@ draggable_shiny <- data.frame(
 
 droppable_shiny <- data.frame(
   Interaction_type = 'droppable',
-  suffix = c('dragging', 'over', 'drop', 'dropped', 'out'),
-  `The_returned_shiny_input_value` = c(
+  Shiny_input = c('input\\$\\<id\\>_dragging', 'input\\$\\<id\\>_over', 'input\\$\\<id\\>_drop', 'input\\$\\<id\\>_dropped', 'input\\$\\<id\\>_out'),
+  `Value_returned` = c(
     'The id of an acceptable element that is now dragging',
     'The id of the last acceptable element that is dragged over',
     'The id of the last acceptable element that is dropped',
@@ -116,17 +137,17 @@ droppable_shiny <- data.frame(
 
 resizable_shiny <- data.frame(
   Interaction_type = 'resizable',
-  suffix = c('size', 'is_resizing'),
-  `The_returned_shiny_input_value` = c(
+  Shiny_input = c('input\\$\\<id\\>_size', 'input\\$\\<id\\>_is_resizing'),
+  `Value_returned` = c(
     'A list of the element\'s current size',
-    'TRUE or FALSE that indicate whether the element is resizing'
+    'TRUE or FALSE that indicate whether the element is being resized'
   )
 )
 
 selectable_shiny <- data.frame(
   Interaction_type = 'selectable',
-  suffix = c('selected', 'is_selecting'),
-  `The_returned_shiny_input_value` = c(
+  Shiny_input = c('input\\$\\<id\\>_selected', 'input\\$\\<id\\>_is_selecting'),
+  `Value_returned` = c(
     'A dataframe containing the id and innerText of curently selected items',
     'TRUE or FALSE that indicate whether the element is selecting (e.g. during lasso selection)'
   )
@@ -134,8 +155,8 @@ selectable_shiny <- data.frame(
 
 sortable_shiny <- data.frame(
   Interaction_type = 'sortable',
-  suffix = c('order'),
-  `The_returned_shiny_input_value` = c(
+  Shiny_input = c('input\\$\\<id\\>_order'),
+  `Value_returned` = c(
     'A dataframe containing the id and innerText of items in the current order'
   )
 )
@@ -165,7 +186,7 @@ knitr::kable(rbind(draggable_shiny, droppable_shiny, resizable_shiny,
 #  
 #  )
 #  
-#  # pass the shiny option to draggable
+#  # pass the shiny option to an interaction function
 #  jqui_draggable('#foo', options = list(
 #    shiny = shiny_opt,
 #    #other draggable-specific options
@@ -177,7 +198,7 @@ knitr::kable(rbind(draggable_shiny, droppable_shiny, resizable_shiny,
 #    shiny = list(
 #      # By default, draggable element has a shiny input value showing the
 #      # element's position (relative to the parent element). Here, another shiny
-#      # input value (input$foo_offset) is added. It gives the element's offset
+#      # input value (input$foo_offset) is added. It returns the element's offset
 #      # (position relative to the document).
 #      offset = list(
 #        # return the updated offset value when the draggable is created or dragging
